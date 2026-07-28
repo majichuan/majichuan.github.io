@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户反馈分类智能体 | AI运营工具</title>
+<style>
+  :root {
+    --pink: #FF7BA6; --peach: #FFAB76; --lemon: #FFE885;
+    --mint: #7FE8C4; --babyblue: #7DC8F0; --lavender: #B8A0FF;
+    --rose: #FF8FAF; --coral: #FF8C7E;
+    --dark: #2D2040; --text: #4A3B5C; --light: #FFF8FC; --white: #FFF;
+    --shadow: 0 4px 24px rgba(180,150,200,.12);
+    --shadow-lg: 0 12px 48px rgba(180,150,200,.2);
+    --bug: #FF7BA6; --feature: #7DC8F0; --complaint: #FF8C7E;
+    --praise: #7FE8C4; --question: #B8A0FF; --ux: #FFAB76;
+    --high: #FF5E6B; --medium: #FFB84D; --low: #7DC8F0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(170deg, #FFF0F5 0%, #FFF8FC 20%, #F8F4FF 50%, #FFF5F8 80%);
+    color: var(--text); min-height:100vh; line-height:1.6;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: rgba(255,255,255,.82); backdrop-filter:blur(20px);
+    border-bottom:1px solid #F0E8F8; padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+  }
+  .app-logo { display:flex; align-items:center; gap:10px; }
+  .app-logo .icon { font-size:2rem; }
+  .app-logo h1 { font-size:1.25rem; font-weight:800; color:var(--dark); }
+  .app-logo .badge {
+    font-size:.7rem; padding:3px 10px; border-radius:20px;
+    background: linear-gradient(135deg, var(--pink), var(--lavender)); color:#fff; font-weight:700;
+  }
+  .header-actions { display:flex; gap:10px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:6px; padding:10px 20px;
+    border-radius:50px; font-weight:700; font-size:.88rem; cursor:pointer; border:none;
+    transition:all .25s; text-decoration:none;
+  }
+  .btn-sm { padding:6px 14px; font-size:.78rem; }
+  .btn-primary { background:linear-gradient(135deg, var(--pink), var(--lavender)); color:#fff; box-shadow:0 4px 16px rgba(184,160,255,.35); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(184,160,255,.45); }
+  .btn-outline { background:transparent; border:2px solid #E8DDF0; color:var(--dark); }
+  .btn-outline:hover { border-color:var(--pink); color:var(--pink); }
+  .btn-ghost { background:transparent; color:var(--text); }
+  .btn-ghost:hover { background:#F8F4FC; }
+
+  /* ── Layout ── */
+  .app-main { max-width:1340px; margin:0 auto; padding:28px 24px; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:960px) { .app-main { grid-template-columns:1fr; } }
+
+  /* ── Panel ── */
+  .panel {
+    background:var(--white); border-radius:24px; border:1.5px solid #F0E8F8;
+    box-shadow:var(--shadow); overflow:hidden;
+  }
+  .panel-header {
+    padding:20px 24px; border-bottom:1px solid #F5F0FA;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .panel-header h2 { font-size:1.05rem; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:8px; }
+  .panel-body { padding:20px 24px; }
+  .panel-body.no-pad { padding:0; }
+
+  /* ── Input Area ── */
+  .input-tabs { display:flex; gap:0; margin-bottom:16px; }
+  .input-tab {
+    padding:8px 20px; font-size:.82rem; font-weight:700; cursor:pointer;
+    border:none; background:#F8F4FC; color:#9988AA; border-radius:50px;
+    transition:all .25s; margin-right:6px;
+  }
+  .input-tab.active { background:linear-gradient(135deg, var(--pink), var(--lavender)); color:#fff; }
+  #feedbackInput {
+    width:100%; min-height:220px; border:2px solid #F0E8F8; border-radius:16px;
+    padding:16px; font-size:.93rem; font-family:inherit; color:var(--text);
+    resize:vertical; line-height:1.7; transition:border-color .25s;
+  }
+  #feedbackInput:focus { outline:none; border-color:var(--lavender); }
+  #feedbackInput::placeholder { color:#C0B0D0; }
+  .input-hint { font-size:.78rem; color:#A898B8; margin-top:8px; }
+  .input-actions { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; align-items:center; }
+  .feedback-count {
+    margin-left:auto; font-size:.85rem; font-weight:700; color:var(--lavender);
+  }
+
+  /* ── Stats Row ── */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  @media (max-width:640px) { .stats-row { grid-template-columns:1fr 1fr; } }
+  .stat-box {
+    background:var(--white); border-radius:20px; padding:20px; text-align:center;
+    border:1.5px solid #F0E8F8; transition:all .25s;
+  }
+  .stat-box:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+  .stat-box .num { font-size:2.2rem; font-weight:900; line-height:1; }
+  .stat-box .lbl { font-size:.8rem; color:#9988AA; margin-top:4px; font-weight:600; }
+  .stat-box:nth-child(1) .num { color:var(--pink); }
+  .stat-box:nth-child(2) .num { color:var(--lavender); }
+  .stat-box:nth-child(3) .num { color:var(--babyblue); }
+  .stat-box:nth-child(4) .num { color:var(--mint); }
+
+  /* ── Charts ── */
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+  @media (max-width:640px) { .charts-grid { grid-template-columns:1fr; } }
+  .chart-box {
+    background:var(--white); border-radius:20px; padding:20px;
+    border:1.5px solid #F0E8F8;
+  }
+  .chart-box h3 { font-size:.9rem; font-weight:800; color:var(--dark); margin-bottom:14px; }
+
+  /* Category bar chart */
+  .bar-chart { display:flex; flex-direction:column; gap:10px; }
+  .bar-row { display:flex; align-items:center; gap:10px; }
+  .bar-label { width:72px; font-size:.78rem; font-weight:700; color:var(--text); text-align:right; flex-shrink:0; }
+  .bar-track { flex:1; height:28px; background:#F5F0FA; border-radius:14px; overflow:hidden; position:relative; }
+  .bar-fill { height:100%; border-radius:14px; transition:width .6s cubic-bezier(.16,1,.3,1); position:relative; }
+  .bar-fill.bug { background:var(--bug); }
+  .bar-fill.feature { background:var(--feature); }
+  .bar-fill.complaint { background:var(--complaint); }
+  .bar-fill.praise { background:var(--praise); }
+  .bar-fill.question { background:var(--question); }
+  .bar-fill.ux { background:var(--ux); }
+  .bar-count {
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    font-size:.75rem; font-weight:700; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.15);
+  }
+
+  /* Donut chart (pure CSS) */
+  .donut-wrap { display:flex; align-items:center; justify-content:center; gap:20px; }
+  .donut {
+    width:130px; height:130px; border-radius:50%;
+    position:relative; flex-shrink:0;
+  }
+  .donut-legend { display:flex; flex-direction:column; gap:8px; font-size:.78rem; }
+  .donut-legend span { display:flex; align-items:center; gap:6px; font-weight:600; }
+  .donut-legend .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .dot.pos { background:var(--mint); }
+  .dot.neu { background:var(--babyblue); }
+  .dot.neg { background:var(--pink); }
+
+  /* Priority bars */
+  .priority-list { display:flex; flex-direction:column; gap:10px; }
+  .priority-row { display:flex; align-items:center; gap:10px; }
+  .priority-tag {
+    width:56px; padding:4px 0; border-radius:20px; font-size:.72rem; font-weight:800;
+    text-align:center; color:#fff; flex-shrink:0;
+  }
+  .priority-tag.high { background:var(--high); }
+  .priority-tag.medium { background:var(--medium); }
+  .priority-tag.low { background:var(--low); }
+  .priority-bar { flex:1; height:22px; background:#F5F0FA; border-radius:11px; overflow:hidden; }
+  .priority-fill { height:100%; border-radius:11px; transition:width .6s cubic-bezier(.16,1,.3,1); }
+  .priority-fill.high { background:linear-gradient(90deg, #FF5E6B, #FF8C7E); }
+  .priority-fill.medium { background:linear-gradient(90deg, #FFB84D, #FFD080); }
+  .priority-fill.low { background:linear-gradient(90deg, #7DC8F0, #A8DFF8); }
+  .priority-count { font-size:.8rem; font-weight:700; color:var(--text); width:30px; }
+
+  /* ── Feedback List ── */
+  .feedback-list { display:flex; flex-direction:column; gap:10px; max-height:600px; overflow-y:auto; }
+  .feedback-card {
+    background:var(--white); border-radius:16px; padding:16px 20px;
+    border:1.5px solid #F0E8F8; transition:all .25s;
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .feedback-card:hover { border-color:#E0D0F0; box-shadow:var(--shadow); }
+  .fb-category {
+    width:42px; height:42px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+  }
+  .fb-category.bug { background:#FFF0F3; }
+  .fb-category.feature { background:#F0F6FD; }
+  .fb-category.complaint { background:#FFF4F0; }
+  .fb-category.praise { background:#F0FCF6; }
+  .fb-category.question { background:#F4F0FF; }
+  .fb-category.ux { background:#FFF8F0; }
+  .fb-content { flex:1; min-width:0; }
+  .fb-text { font-size:.9rem; color:var(--text); line-height:1.5; }
+  .fb-meta { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; align-items:center; }
+  .fb-tag {
+    font-size:.68rem; padding:2px 10px; border-radius:20px; font-weight:700;
+  }
+  .fb-tag.bug { background:#FFF0F3; color:#E85578; }
+  .fb-tag.feature { background:#F0F6FD; color:#5BA0D0; }
+  .fb-tag.complaint { background:#FFF4F0; color:#E87860; }
+  .fb-tag.praise { background:#F0FCF6; color:#4DB88D; }
+  .fb-tag.question { background:#F4F0FF; color:#8878D0; }
+  .fb-tag.ux { background:#FFF8F0; color:#E89850; }
+  .fb-tag.priority-high { background:#FFF0F3; color:#E85578; }
+  .fb-tag.priority-medium { background:#FFF8ED; color:#D49830; }
+  .fb-tag.priority-low { background:#F0F8FC; color:#5BA0D0; }
+  .fb-sentiment { font-size:.8rem; font-weight:700; }
+  .fb-sentiment.pos { color:#4DB88D; }
+  .fb-sentiment.neu { color:#5BA0D0; }
+  .fb-sentiment.neg { color:#E85578; }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align:center; padding:60px 20px; color:#B8A8C8;
+  }
+  .empty-state .icon { font-size:4rem; margin-bottom:16px; }
+  .empty-state h3 { font-size:1.2rem; color:var(--text); margin-bottom:8px; }
+  .empty-state p { font-size:.9rem; }
+
+  /* ── Toast ── */
+  .toast {
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+    background:var(--dark); color:#fff; padding:12px 28px; border-radius:50px;
+    font-weight:700; font-size:.88rem; z-index:999;
+    animation:toastIn .35s ease, toastOut .35s ease 2.2s forwards;
+    pointer-events:none;
+  }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
+
+  /* ── Responsive ── */
+  @media (max-width:640px) {
+    .app-header { padding:12px 16px; }
+    .app-header h1 { font-size:1rem; }
+    .app-main { padding:16px; gap:16px; }
+    .charts-grid { grid-template-columns:1fr; }
+    .donut-wrap { flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="app-header">
+  <div class="app-logo">
+    <span class="icon">🎯</span>
+    <h1>用户反馈分类智能体</h1>
+    <span class="badge">AI Powered</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-sm" onclick="loadDemo()">📋 加载示例</button>
+    <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
+    <button class="btn btn-primary btn-sm" onclick="runAnalysis()">🔍 分析反馈</button>
+  </div>
+</header>
+
+<!-- Main -->
+<div class="app-main">
+
+  <!-- Left: Input -->
+  <div>
+    <div class="panel" style="margin-bottom:24px;">
+      <div class="panel-header">
+        <h2>📝 输入用户反馈</h2>
+        <span style="font-size:.78rem;color:#9988AA;">一行一条反馈</span>
+      </div>
+      <div class="panel-body">
+        <div class="input-tabs">
+          <button class="input-tab active" onclick="switchInputMode('text')">📄 文本输入</button>
+          <button class="input-tab" onclick="switchInputMode('file')">📁 文件上传</button>
+        </div>
+        <textarea id="feedbackInput" placeholder="请在此粘贴用户反馈，每行一条。例如：
+App打开就闪退，根本用不了
+希望可以增加夜间模式
+客服回复太慢了，等了3天都没消息
+这个功能真的太棒了，每天都在用
+怎么导出我的数据记录？"></textarea>
+        <div style="display:none;" id="fileUploadArea">
+          <input type="file" id="fileInput" accept=".txt,.csv" onchange="handleFileUpload(event)" style="margin-top:12px;">
+          <p class="input-hint">支持 .txt 和 .csv 文件，自动按行解析</p>
+        </div>
+        <div class="input-hint">💡 支持中英文混合反馈 · 自动识别 6 大分类 · 情感分析 · 优先级排序</div>
+        <div class="input-actions">
+          <button class="btn btn-primary" onclick="runAnalysis()">🔍 开始智能分析</button>
+          <button class="btn btn-outline btn-sm" onclick="loadDemo()">📋 加载示例数据</button>
+          <span class="feedback-count" id="feedbackCount">尚未输入反馈</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback List -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>📋 分析结果明细</h2>
+        <span id="resultCount" style="font-size:.78rem;color:#9988AA;"></span>
+      </div>
+      <div class="panel-body no-pad">
+        <div id="feedbackListContainer" style="padding:8px 20px 20px;">
+          <div class="empty-state">
+            <div class="icon">🔍</div>
+            <h3>等待分析</h3>
+            <p>输入用户反馈后点击"开始智能分析"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Report -->
+  <div>
+    <div id="reportPanel">
+      <div class="empty-state panel" style="padding:80px 20px;">
+        <div class="icon">📊</div>
+        <h3>可视化报告区域</h3>
+        <p>分析完成后，这里将展示完整的可视化报告</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  CLASSIFICATION ENGINE
+// ═══════════════════════════════════════
+const CATEGORIES = {
+  bug:       { label:'产品故障', icon:'🐛', keywords:['闪退','崩溃','卡顿','白屏','报错','bug','打不开','加载不了','死机','异常','出错','无法','不能','挂了','坏了','502','404','error','crash','黑屏','花屏','没反应','点了没反应','强制退出','自动退出','重启','连不上','超时','丢数据','数据丢失','不同步','延迟'] },
+  feature:   { label:'功能建议', icon:'💡', keywords:['建议','希望','要是','能不能','加一个','增加','添加','新增','支持','什么时候','期待','想要','需要','可否','是否考虑','优化建议','求','跪求','强烈建议','如果能'] },
+  complaint: { label:'用户投诉', icon:'😤', keywords:['投诉','太差','太烂','垃圾','失望','坑','无语','受不了','骗','忽悠','生气','恶心','投诉你','举报','差评','太慢','等了好久','一直没','还没处理','不负责任','不专业','骗钱','浪费','欺骗','差劲','体验很差','糟糕'] },
+  praise:    { label:'用户好评', icon:'🌟', keywords:['好用','不错','很棒','喜欢','点赞','推荐','好评','太棒了','良心','赞','牛','神器','优秀','方便','效率','提高','解决','完美','爱了','五星','满分','好使','真不错','超出预期','惊艳'] },
+  question:  { label:'用户咨询', icon:'❓', keywords:['怎么','如何','请问','什么','为什么','请教','能不能','能否','在哪','多少钱','收费吗','免费吗','支持吗','有吗','多久','几点','什么时候','教程','帮助','不会用','求教','问一下','咨询'] },
+  ux:        { label:'体验问题', icon:'🎨', keywords:['难用','找不到','复杂','看不懂','不方便','麻烦','繁琐','反人类','不合理','不清楚','不明显','不知道在哪','隐藏','入口','交互','设计','UI','丑','难看的','不清楚','费解','迷路','导航','流程'] }
+};
+
+const POSITIVE_WORDS = ['好','棒','赞','优秀','方便','快','稳定','流畅','喜欢','满意','推荐','完美','良心','高效','舒服','省心','好使','不错','很棒','爱了','牛','神器','惊艳','清晰','简洁','快','快多了','提升','进步'];
+const NEGATIVE_WORDS = ['差','烂','慢','卡','闪退','崩溃','失望','烦','讨厌','垃圾','坑','无语','生气','难用','复杂','骗','糟糕','差劲','受不了','不满','垃圾','恶心','骗子'];
+
+function classifyFeedback(text) {
+  const lower = text.toLowerCase().trim();
+  let bestCategory = 'question';
+  let bestScore = 0;
+
+  for (const [cat, config] of Object.entries(CATEGORIES)) {
+    let score = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) score += kw.length >= 3 ? 2 : 1;
+    }
+    if (score > bestScore) { bestScore = score; bestCategory = cat; }
+  }
+
+  // Sentiment
+  let posCount = 0, negCount = 0;
+  POSITIVE_WORDS.forEach(w => { if (lower.includes(w)) posCount++; });
+  NEGATIVE_WORDS.forEach(w => { if (lower.includes(w)) negCount++; });
+
+  let sentiment, sentimentScore;
+  if (posCount > negCount + 1) { sentiment = 'positive'; sentimentScore = Math.min(1, (posCount - negCount) * 0.25); }
+  else if (negCount > posCount + 1) { sentiment = 'negative'; sentimentScore = Math.max(-1, (negCount - posCount) * -0.25); }
+  else { sentiment = 'neutral'; sentimentScore = 0; }
+
+  // Priority
+  let priorityScore = 0;
+  if (bestCategory === 'complaint') priorityScore += 35;
+  if (bestCategory === 'bug') priorityScore += 30;
+  if (sentiment === 'negative') priorityScore += 25;
+  if (bestCategory === 'ux') priorityScore += 15;
+  if (bestCategory === 'feature') priorityScore += 10;
+  if (bestCategory === 'question') priorityScore += 5;
+  if (bestCategory === 'praise') priorityScore += 0;
+  // urgency keywords
+  const urgentWords = ['紧急','马上','立刻','着急','尽快','救命','严重','急','火速'];
+  urgentWords.forEach(w => { if (lower.includes(w)) priorityScore += 10; });
+  let priority = priorityScore >= 55 ? 'high' : priorityScore >= 25 ? 'medium' : 'low';
+
+  // Keywords found
+  const matchedKeywords = [];
+  const config = CATEGORIES[bestCategory];
+  for (const kw of config.keywords) {
+    if (lower.includes(kw) && matchedKeywords.length < 5) matchedKeywords.push(kw);
+  }
+
+  return {
+    text,
+    category: bestCategory,
+    categoryLabel: CATEGORIES[bestCategory].label,
+    categoryIcon: CATEGORIES[bestCategory].icon,
+    sentiment,
+    sentimentScore,
+    priority,
+    priorityScore: Math.min(100, priorityScore),
+    keywords: matchedKeywords,
+  };
+}
+
+// ═══════════════════════════════════════
+//  UI LOGIC
+// ═══════════════════════════════════════
+let analyzedResults = [];
+let inputMode = 'text';
+
+function switchInputMode(mode) {
+  inputMode = mode;
+  document.querySelectorAll('.input-tab').forEach(t => t.classList.remove('active'));
+  if (mode === 'text') {
+    document.querySelector('.input-tab:nth-child(1)').classList.add('active');
+    document.getElementById('feedbackInput').style.display = 'block';
+    document.getElementById('fileUploadArea').style.display = 'none';
+  } else {
+    document.querySelector('.input-tab:nth-child(2)').classList.add('active');
+    document.getElementById('feedbackInput').style.display = 'none';
+    document.getElementById('fileUploadArea').style.display = 'block';
+  }
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('feedbackInput').value = ev.target.result;
+    updateFeedbackCount();
+    showToast('✅ 文件已加载，共识别 ' + ev.target.result.split('\n').filter(l => l.trim()).length + ' 条反馈');
+  };
+  reader.readAsText(file);
+}
+
+function loadDemo() {
+  const demos = [
+    'App打开就闪退，根本用不了，iPhone 15 Pro',
+    '希望可以增加夜间模式，晚上看书眼睛太累了',
+    '客服回复太慢了，等了3天都没消息，太失望了',
+    '这个功能真的太棒了，每天都在用，效率提高了好几倍',
+    '怎么导出我的数据记录？找了好久没找到导出按钮',
+    '界面太复杂了，新用户完全看不懂怎么操作',
+    '支付页面一直转圈加载不了，换了WiFi和4G都不行',
+    '建议增加微信登录方式，现在只能用手机号太不方便',
+    '数据报表功能很强大，但是能不能支持自定义时间范围？',
+    '你们的客服态度太差了，问题没解决还挂我电话，必须投诉',
+    '用了3个月了，整体体验不错，推荐给了同事',
+    '为什么更新之后之前的收藏全没了？急死我了！',
+    '希望增加批量操作功能，一个个点太费时间了',
+    '注册流程太繁琐了，填了5分钟还没注册完，直接放弃了',
+    '这个AI功能真是神器，写周报省了至少2小时',
+    '登录页面的验证码根本看不清，试了10次都失败',
+  ];
+  document.getElementById('feedbackInput').value = demos.join('\n');
+  updateFeedbackCount();
+  showToast('📋 已加载 ' + demos.length + ' 条示例反馈');
+}
+
+function clearAll() {
+  document.getElementById('feedbackInput').value = '';
+  analyzedResults = [];
+  renderFeedbackList();
+  renderReport();
+  updateFeedbackCount();
+  showToast('🗑 已清空所有数据');
+}
+
+function updateFeedbackCount() {
+  const lines = document.getElementById('feedbackInput').value.split('\n').filter(l => l.trim());
+  const el = document.getElementById('feedbackCount');
+  if (lines.length === 0) el.textContent = '尚未输入反馈';
+  else el.textContent = '共 ' + lines.length + ' 条反馈待分析';
+}
+
+document.getElementById('feedbackInput').addEventListener('input', updateFeedbackCount);
+
+function runAnalysis() {
+  const lines = document.getElementById('feedbackInput').value.split('\n').filter(l => l.trim());
+  if (lines.length === 0) { showToast('⚠️ 请先输入用户反馈'); return; }
+  analyzedResults = lines.map((text, i) => ({ id: i + 1, ...classifyFeedback(text) }));
+  renderFeedbackList();
+  renderReport();
+  showToast('✅ 分析完成！共处理 ' + analyzedResults.length + ' 条反馈');
+  // scroll to report on mobile
+  if (window.innerWidth <= 960) {
+    document.getElementById('reportPanel').scrollIntoView({ behavior:'smooth' });
+  }
+}
+
+// ═══════════════════════════════════════
+//  RENDER FEEDBACK LIST
+// ═══════════════════════════════════════
+function renderFeedbackList() {
+  const container = document.getElementById('feedbackListContainer');
+  document.getElementById('resultCount').textContent = analyzedResults.length ? '共 ' + analyzedResults.length + ' 条' : '';
+
+  if (analyzedResults.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>等待分析</h3><p>输入用户反馈后点击"开始智能分析"</p></div>`;
+    return;
+  }
+  container.innerHTML = '<div class="feedback-list">' + analyzedResults.map(r => `
+    <div class="feedback-card">
+      <div class="fb-category ${r.category}">${r.categoryIcon}</div>
+      <div class="fb-content">
+        <div class="fb-text">${escHtml(r.text)}</div>
+        <div class="fb-meta">
+          <span class="fb-tag ${r.category}">${r.categoryIcon} ${r.categoryLabel}</span>
+          <span class="fb-sentiment ${r.sentiment === 'positive' ? 'pos' : r.sentiment === 'negative' ? 'neg' : 'neu'}">
+            ${r.sentiment === 'positive' ? '😊 正面' : r.sentiment === 'negative' ? '😟 负面' : '😐 中性'}
+          </span>
+          <span class="fb-tag priority-${r.priority}">${r.priority === 'high' ? '🔴 高优先' : r.priority === 'medium' ? '🟡 中优先' : '🟢 低优先'} (${r.priorityScore}分)</span>
+          ${r.keywords.slice(0,3).map(k => `<span style="font-size:.68rem;color:#B8A8C8;">#${k}</span>`).join(' ')}
+        </div>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ═══════════════════════════════════════
+//  RENDER REPORT
+// ═══════════════════════════════════════
+function renderReport() {
+  const panel = document.getElementById('reportPanel');
+  if (analyzedResults.length === 0) {
+    panel.innerHTML = `<div class="empty-state panel" style="padding:80px 20px;"><div class="icon">📊</div><h3>可视化报告区域</h3><p>分析完成后，这里将展示完整的可视化报告</p></div>`;
+    return;
+  }
+
+  const total = analyzedResults.length;
+  const byCategory = {}, bySentiment = {}, byPriority = {};
+  analyzedResults.forEach(r => {
+    byCategory[r.category] = (byCategory[r.category] || 0) + 1;
+    bySentiment[r.sentiment] = (bySentiment[r.sentiment] || 0) + 1;
+    byPriority[r.priority] = (byPriority[r.priority] || 0) + 1;
+  });
+  const catEntries = Object.entries(byCategory).sort((a,b) => b[1] - a[1]);
+  const maxCat = Math.max(...catEntries.map(e => e[1]), 1);
+  const posCount = bySentiment['positive'] || 0;
+  const neuCount = bySentiment['neutral'] || 0;
+  const negCount = bySentiment['negative'] || 0;
+  const highCount = byPriority['high'] || 0;
+  const medCount = byPriority['medium'] || 0;
+  const lowCount = byPriority['low'] || 0;
+
+  // Donut chart segments
+  const sentTotal = posCount + neuCount + negCount || 1;
+  const posPct = (posCount / sentTotal * 100).toFixed(0);
+  const neuPct = (neuCount / sentTotal * 100).toFixed(0);
+  const negPct = (negCount / sentTotal * 100).toFixed(0);
+  const donutGradient = `conic-gradient(
+    #7FE8C4 0deg ${posCount/sentTotal*360}deg,
+    #7DC8F0 ${posCount/sentTotal*360}deg ${(posCount+neuCount)/sentTotal*360}deg,
+    #FF7BA6 ${(posCount+neuCount)/sentTotal*360}deg 360deg
+  )`;
+  const priTotal = highCount + medCount + lowCount || 1;
+
+  panel.innerHTML = `
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="num">${total}</div><div class="lbl">📋 反馈总数</div></div>
+      <div class="stat-box"><div class="num">${Object.keys(byCategory).length}</div><div class="lbl">🏷 涉及分类</div></div>
+      <div class="stat-box"><div class="num">${negCount}</div><div class="lbl">⚠️ 负面反馈</div></div>
+      <div class="stat-box"><div class="num">${highCount}</div><div class="lbl">🔴 高优先级</div></div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+      <!-- Category Distribution -->
+      <div class="chart-box">
+        <h3>📊 分类分布</h3>
+        <div class="bar-chart">
+          ${catEntries.map(([cat, count]) => `
+            <div class="bar-row">
+              <span class="bar-label">${CATEGORIES[cat].icon} ${CATEGORIES[cat].label}</span>
+              <div class="bar-track"><div class="bar-fill ${cat}" style="width:${(count/maxCat*100).toFixed(0)}%"><span class="bar-count">${count}条</span></div></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Sentiment Donut -->
+      <div class="chart-box">
+        <h3>💭 情感倾向</h3>
+        <div class="donut-wrap">
+          <div class="donut" style="background:${donutGradient};"></div>
+          <div class="donut-legend">
+            <span><span class="dot pos"></span> 😊 正面 ${posCount}条 (${posPct}%)</span>
+            <span><span class="dot neu"></span> 😐 中性 ${neuCount}条 (${neuPct}%)</span>
+            <span><span class="dot neg"></span> 😟 负面 ${negCount}条 (${negPct}%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority -->
+    <div class="chart-box" style="margin-bottom:24px;">
+      <h3>🚨 优先级排序</h3>
+      <div class="priority-list">
+        <div class="priority-row">
+          <span class="priority-tag high">🔴 高</span>
+          <div class="priority-bar"><div class="priority-fill high" style="width:${(highCount/priTotal*100).toFixed(0)}%"></div></div>
+          <span class="priority-count">${highCount}条</span>
+        </div>
+        <div class="priority-row">
+          <span class="priority-tag medium">🟡 中</span>
+          <div class="priority-bar"><div class="priority-fill medium" style="width:${(medCount/priTotal*100).toFixed(0)}%"></div></div>
+          <span class="priority-count">${medCount}条</span>
+        </div>
+        <div class="priority-row">
+          <span class="priority-tag low">🟢 低</span>
+          <div class="priority-bar"><div class="priority-fill low" style="width:${(lowCount/priTotal*100).toFixed(0)}%"></div></div>
+          <span class="priority-count">${lowCount}条</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- High Priority Quick View -->
+    ${highCount > 0 ? `
+    <div class="chart-box">
+      <h3>⚠️ 需要立即处理的反馈</h3>
+      <div class="feedback-list" style="max-height:300px;">
+        ${analyzedResults.filter(r => r.priority === 'high').map(r => `
+          <div class="feedback-card">
+            <div class="fb-category ${r.category}">${r.categoryIcon}</div>
+            <div class="fb-content">
+              <div class="fb-text">${escHtml(r.text)}</div>
+              <div class="fb-meta">
+                <span class="fb-tag ${r.category}">${r.categoryLabel}</span>
+                <span class="fb-sentiment neg">😟 负面</span>
+                <span class="fb-tag priority-high">🔴 优先级 ${r.priorityScore}分</span>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Summary -->
+    <div class="chart-box" style="margin-top:16px;">
+      <h3>📝 AI 分析总结</h3>
+      <p style="font-size:.9rem;color:#6B5B7B;line-height:1.8;">
+        📋 本次共分析 <strong>${total}</strong> 条用户反馈，覆盖 <strong>${Object.keys(byCategory).length}</strong> 个分类。
+        ${negCount > 0 ? `其中 <strong style="color:var(--pink);">${negCount} 条负面反馈</strong>需重点关注。` : ''}
+        ${highCount > 0 ? `<strong style="color:#FF5E6B;">${highCount} 条高优先级反馈</strong>建议立即处理，` : ''}
+        主要问题集中在<strong>${
+          catEntries.slice(0, 2).map(([cat]) => CATEGORIES[cat].label).join('、')
+        }</strong>方面。
+        ${posCount > total * 0.3 ? '整体来看，正面反馈占比较高，用户产品满意度良好。' : ''}
+        ${negCount > total * 0.3 ? '负面反馈占比较高，建议尽快排查产品问题和客服流程。' : ''}
+      </p>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+// ═══════════════════════════════════════
+//  INIT: auto-load demo for first-time visitors
+// ═══════════════════════════════════════
+setTimeout(() => {
+  if (analyzedResults.length === 0 && !document.getElementById('feedbackInput').value.trim()) {
+    loadDemo();
+    runAnalysis();
+  }
+}, 300);
+</script>
+</body>
+</html>

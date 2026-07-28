@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 运营数据分析工具 | SQL生成 + 可视化</title>
+<style>
+  :root {
+    --bg: #F8F9FC; --surface: #FFF; --border: #E8ECF4;
+    --primary: #5B6AF0; --primary-light: #EEF0FF;
+    --accent: #00C9A7; --warn: #FF6B6B; --info: #4EC5F1;
+    --dark: #1A1D2E; --text: #3A3D52; --muted: #8B8FA8;
+    --shadow: 0 2px 16px rgba(20,20,60,.06);
+    --shadow-lg: 0 8px 40px rgba(20,20,60,.1);
+    --radius: 16px;
+    --mono: "SF Mono", "Cascadia Code", "Consolas", "Fira Code", monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 14px 28px; display:flex; align-items:center; justify-content:space-between;
+    position: sticky; top:0; z-index:50;
+  }
+  .app-logo { display:flex; align-items:center; gap:10px; }
+  .app-logo .icon { font-size:1.6rem; }
+  .app-logo h1 { font-size:1.15rem; font-weight:800; color:var(--dark); }
+  .app-logo .tag { font-size:.68rem; padding:3px 10px; border-radius:20px; background:var(--primary-light); color:var(--primary); font-weight:700; }
+  .header-actions { display:flex; gap:8px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:6px; padding:9px 18px;
+    border-radius:50px; font-weight:700; font-size:.82rem; cursor:pointer; border:none;
+    transition:all .2s; white-space:nowrap;
+  }
+  .btn-primary { background:var(--primary); color:#fff; }
+  .btn-primary:hover { background:#4A5AE0; transform:translateY(-1px); box-shadow:0 4px 16px rgba(91,106,240,.3); }
+  .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text); }
+  .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+  .btn-sm { padding:5px 14px; font-size:.76rem; }
+
+  /* ── Main Layout ── */
+  .app-main { display:grid; grid-template-columns:460px 1fr; height:calc(100vh - 62px); }
+  @media (max-width:1000px) { .app-main { grid-template-columns:1fr; grid-template-rows:auto 1fr; } }
+
+  /* ── Left Panel ── */
+  .left-panel {
+    background:var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .query-section { padding:20px; border-bottom:1px solid var(--border); }
+  .query-section h2 { font-size:.9rem; font-weight:800; color:var(--dark); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .query-input-wrap { position:relative; }
+  #queryInput {
+    width:100%; padding:14px 48px 14px 16px; border:2px solid var(--border); border-radius:14px;
+    font-size:.9rem; font-family:inherit; color:var(--text); resize:none; min-height:52px;
+    transition:border-color .2s; line-height:1.5;
+  }
+  #queryInput:focus { outline:none; border-color:var(--primary); }
+  #queryInput::placeholder { color:var(--muted); }
+  .query-submit {
+    position:absolute; right:8px; bottom:8px; width:38px; height:38px;
+    border-radius:12px; background:var(--primary); color:#fff; border:none;
+    font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .query-submit:hover { background:#4A5AE0; }
+  .query-submit:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* Suggestions */
+  .suggestions { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .suggestion {
+    font-size:.74rem; padding:5px 12px; border-radius:20px; cursor:pointer;
+    background:var(--primary-light); color:var(--primary); font-weight:600;
+    border:none; transition:all .2s; white-space:nowrap;
+  }
+  .suggestion:hover { background:#DDE0FF; }
+
+  /* SQL output */
+  .sql-section { padding:16px 20px; border-bottom:1px solid var(--border); }
+  .sql-section h2 { font-size:.82rem; font-weight:800; color:var(--dark); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .sql-block {
+    background:#1E2235; color:#A8F0C8; padding:14px 16px; border-radius:12px;
+    font-family:var(--mono); font-size:.78rem; line-height:1.7;
+    overflow-x:auto; white-space:pre-wrap; max-height:180px; overflow-y:auto;
+  }
+  .sql-block .keyword { color:#FF9DF0; }
+  .sql-block .string { color:#FFD880; }
+  .sql-block .number { color:#80D0FF; }
+  .sql-block .func { color:#80FFC8; }
+  .sql-empty { color:var(--muted); font-size:.82rem; text-align:center; padding:20px; }
+
+  /* Query history */
+  .history-section { flex:1; overflow-y:auto; padding:12px 20px; }
+  .history-section h2 { font-size:.82rem; font-weight:800; color:var(--dark); margin-bottom:8px; }
+  .history-item {
+    padding:10px 14px; border-radius:10px; cursor:pointer; font-size:.82rem;
+    color:var(--text); transition:all .15s; margin-bottom:4px;
+    border:1px solid transparent;
+  }
+  .history-item:hover { background:var(--primary-light); border-color:#E0E4FF; }
+
+  /* ── Right Panel ── */
+  .right-panel { overflow-y:auto; padding:24px 28px; }
+  .right-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--muted); text-align:center; }
+  .right-empty .icon { font-size:5rem; margin-bottom:16px; opacity:.6; }
+  .right-empty h3 { font-size:1.2rem; color:var(--text); margin-bottom:6px; }
+  .right-empty p { font-size:.88rem; max-width:380px; line-height:1.6; }
+
+  /* ── Dashboard Cards ── */
+  .metric-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:14px; margin-bottom:24px; }
+  .metric-card {
+    background:var(--surface); border-radius:14px; padding:18px 20px; border:1px solid var(--border);
+  }
+  .metric-card .m-label { font-size:.74rem; color:var(--muted); font-weight:600; margin-bottom:4px; }
+  .metric-card .m-value { font-size:1.8rem; font-weight:900; color:var(--dark); line-height:1.2; }
+  .metric-card .m-change { font-size:.76rem; font-weight:700; margin-top:2px; }
+  .m-change.up { color:var(--accent); }
+  .m-change.down { color:var(--warn); }
+
+  /* Chart container */
+  .chart-panel {
+    background:var(--surface); border-radius:14px; border:1px solid var(--border);
+    padding:20px; margin-bottom:20px;
+  }
+  .chart-panel h3 { font-size:.9rem; font-weight:800; color:var(--dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .chart-canvas-wrap { width:100%; position:relative; }
+  canvas { display:block; width:100%; }
+
+  /* Data table */
+  .data-table-wrap { overflow-x:auto; }
+  .data-table {
+    width:100%; border-collapse:collapse; font-size:.84rem;
+  }
+  .data-table th {
+    background:#F8F9FC; padding:10px 14px; text-align:left; font-weight:700;
+    color:var(--dark); border-bottom:2px solid var(--border); white-space:nowrap;
+  }
+  .data-table td { padding:9px 14px; border-bottom:1px solid #F0F2F8; color:var(--text); }
+  .data-table tr:hover td { background:#F8F9FF; }
+
+  /* Loading pulse */
+  @keyframes thinking { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .thinking { animation:thinking 1.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-logo">
+    <span class="icon">📊</span>
+    <h1>AI 运营数据分析工具</h1>
+    <span class="tag">NL → SQL → Chart</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-sm" onclick="resetAll()">🔄 重置</button>
+    <button class="btn btn-outline btn-sm" onclick="exportReport()">📥 导出报告</button>
+  </div>
+</header>
+
+<div class="app-main">
+
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div class="query-section">
+      <h2>💬 自然语言输入</h2>
+      <div class="query-input-wrap">
+        <textarea id="queryInput" placeholder="用自然语言描述你想分析的数据&#10;例如：最近7天的日活用户趋势" rows="2"></textarea>
+        <button class="query-submit" onclick="runQuery()" id="submitBtn" title="分析 (Enter)">▶</button>
+      </div>
+      <div class="suggestions">
+        <button class="suggestion" onclick="quickQuery('最近7天的DAU和新用户趋势')">📈 7日DAU趋势</button>
+        <button class="suggestion" onclick="quickQuery('各渠道的用户转化率对比')">📊 渠道转化对比</button>
+        <button class="suggestion" onclick="quickQuery('用户转化漏斗各环节数据')">🔻 转化漏斗</button>
+        <button class="suggestion" onclick="quickQuery('本月各渠道新增用户数量和占比')">🥧 渠道占比</button>
+        <button class="suggestion" onclick="quickQuery('最近30天的用户留存率变化')">📉 留存率趋势</button>
+        <button class="suggestion" onclick="quickQuery('高价值用户分群的ARPU对比')">👥 用户分群ARPU</button>
+      </div>
+    </div>
+
+    <div class="sql-section">
+      <h2>📝 AI 生成的 SQL</h2>
+      <div id="sqlDisplay"><div class="sql-empty">输入查询后，AI 将自动生成 SQL 语句</div></div>
+    </div>
+
+    <div class="history-section">
+      <h2>🕐 查询历史</h2>
+      <div id="historyList">
+        <div style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px;">暂无查询记录</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel" id="rightPanel">
+    <div class="right-empty">
+      <div class="icon">🔮</div>
+      <h3>AI 驱动的运营数据分析</h3>
+      <p>在左侧输入自然语言问题，AI 将自动生成 SQL、查询数据并生成可视化图表。支持趋势分析、漏斗分析、渠道对比、用户分群等多种运营场景。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  SAMPLE OPERATIONS DATASETS
+// ═══════════════════════════════════════
+const now = new Date(2026, 6, 16); // 2026-07-16
+function d(daysAgo) { const d = new Date(now); d.setDate(d.getDate() - daysAgo); return d.toISOString().slice(0,10); }
+
+const dailyData = Array.from({length:30}, (_, i) => ({
+  date: d(29 - i),
+  dau: Math.floor(85000 + Math.sin(i * 0.35) * 12000 + Math.random() * 5000),
+  new_users: Math.floor(1200 + Math.sin(i * 0.5) * 400 + Math.random() * 200),
+  active_users: Math.floor(42000 + Math.sin(i * 0.3) * 6000 + Math.random() * 3000),
+  retention_7d: +(0.42 + Math.sin(i * 0.4) * 0.06 + (Math.random() - 0.5) * 0.03).toFixed(3),
+  avg_session_min: +(8.5 + Math.sin(i * 0.5) * 1.8 + (Math.random() - 0.5) * 0.8).toFixed(1),
+  revenue: Math.floor(180000 + Math.sin(i * 0.35) * 35000 + Math.random() * 12000),
+}));
+
+const channelData = [
+  { channel:'应用商店搜索', visitors:45000, signups:8900, conversions:1420, cost:85000, roi:3.4 },
+  { channel:'短视频广告',   visitors:38000, signups:6200, conversions:980,  cost:120000, roi:1.7 },
+  { channel:'微信社群裂变', visitors:28000, signups:11200, conversions:2100, cost:25000, roi:5.8 },
+  { channel:'搜索引擎SEM',  visitors:22000, signups:4800, conversions:760,  cost:68000, roi:2.1 },
+  { channel:'小红书种草',   visitors:15000, signups:3800, conversions:520,  cost:42000, roi:1.9 },
+  { channel:'线下活动推广', visitors:8000,  signups:2400, conversions:380,  cost:55000, roi:1.2 },
+  { channel:'合作伙伴导流', visitors:6000,  signups:1500, conversions:240,  cost:18000, roi:2.8 },
+];
+
+const funnelStages = [
+  { stage:'应用访问', users:180000, prev:null },
+  { stage:'注册账号', users:65000, prev:180000 },
+  { stage:'首次使用', users:42000, prev:65000 },
+  { stage:'关键行为', users:18000, prev:42000 },
+  { stage:'付费转化', users:3200, prev:18000 },
+];
+
+const segmentData = [
+  { segment:'高价值用户', count:8500, avg_revenue:285, retention:0.72, arpu:285 },
+  { segment:'活跃用户', count:28000, avg_revenue:95, retention:0.55, arpu:95 },
+  { segment:'普通用户', count:65000, avg_revenue:28, retention:0.32, arpu:28 },
+  { segment:'沉默用户', count:42000, avg_revenue:5, retention:0.08, arpu:5 },
+  { segment:'流失用户', count:18000, avg_revenue:0, retention:0.02, arpu:0 },
+];
+
+// ═══════════════════════════════════════
+//  NL → SQL ENGINE
+// ═══════════════════════════════════════
+const queryTemplates = [
+  { // 0: DAU trend
+    match: /(dau|日活|每日活跃|日活跃用户)/i,
+    sql: `SELECT date, dau, new_users\nFROM daily_metrics\nWHERE date >= DATE_SUB(CURDATE(), INTERVAL %DAYS% DAY)\nORDER BY date ASC;`,
+    chart: 'line', chartTitle:'日活用户趋势', xKey:'date',
+    series: [{ key:'dau', label:'DAU', color:'#5B6AF0' }, { key:'new_users', label:'新增用户', color:'#00C9A7' }],
+    metrics: r => [{ label:'最新DAU', value:fmtNum(r[r.length-1].dau), change:'+5.2%', dir:'up' },
+                   { label:'7日均DAU', value:fmtNum(avgLast(r,'dau',7)), change:'+3.1%', dir:'up' }],
+  },
+  { // 1: Channel conversion
+    match: /(渠道|来源|channel|转化率|转化对比)/i,
+    sql: `SELECT channel, visitors, signups, conversions,\n  ROUND(conversions * 100.0 / visitors, 2) AS conversion_rate\nFROM channel_performance\nORDER BY visitors DESC;`,
+    chart: 'bar', chartTitle:'各渠道用户转化对比', xKey:'channel',
+    series: [{ key:'conversions', label:'付费转化', color:'#5B6AF0' }, { key:'signups', label:'注册用户', color:'#A0B0FF' }],
+    metrics: r => [{ label:'总渠道数', value:r.length, change:'', dir:'' },
+                   { label:'总访客', value:fmtNum(r.reduce((s,x)=>s+x.visitors,0)), change:'', dir:'' }],
+  },
+  { // 2: Funnel
+    match: /(漏斗|转化路径|转化环节|各环节|转化步骤)/i,
+    sql: `SELECT stage, users,\n  users * 100.0 / FIRST_VALUE(users) OVER() AS overall_rate,\n  users * 100.0 / LAG(users) OVER(ORDER BY step) AS step_rate\nFROM conversion_funnel\nORDER BY step;`,
+    chart: 'funnel', chartTitle:'用户转化漏斗', xKey:'stage',
+    series: [{ key:'users', label:'用户数', color:'#5B6AF0' }],
+    metrics: r => [{ label:'整体转化率', value:(r[r.length-1].users/r[0].users*100).toFixed(2)+'%', change:'', dir:'' },
+                   { label:'最大流失', value:getMaxDrop(r), change:'', dir:'down' }],
+  },
+  { // 3: Channel pie
+    match: /(占比|饼图|比例|分布|构成|份额)/i,
+    sql: `SELECT channel, SUM(new_users) AS total_new_users\nFROM channel_daily_stats\nWHERE month = DATE_FORMAT(CURDATE(), '%Y-%m')\nGROUP BY channel\nORDER BY total_new_users DESC;`,
+    chart: 'pie', chartTitle:'本月各渠道新增用户占比', xKey:'channel',
+    series: [{ key:'total_new_users', label:'新增用户', color:'#5B6AF0' }],
+    metrics: r => [{ label:'总新增用户', value:fmtNum(r.reduce((s,x)=>s+x.total_new_users,0)), change:'', dir:'' },
+                   { label:'最大渠道', value:'微信社群裂变', change:'', dir:'' }],
+  },
+  { // 4: Retention trend
+    match: /(留存|retention|回访|次日留存|7日留存)/i,
+    sql: `SELECT date, retention_7d, avg_session_min\nFROM daily_metrics\nWHERE date >= DATE_SUB(CURDATE(), INTERVAL %DAYS% DAY)\nORDER BY date;`,
+    chart: 'line', chartTitle:'用户留存率趋势', xKey:'date',
+    series: [{ key:'retention_7d', label:'7日留存率', color:'#5B6AF0', pct:true },
+             { key:'avg_session_min', label:'平均时长(分钟)', color:'#00C9A7', rightAxis:true }],
+    metrics: r => [{ label:'最新7日留存', value:(r[r.length-1].retention_7d*100).toFixed(1)+'%', change:'+1.2pp', dir:'up' },
+                   { label:'平均时长', value:r[r.length-1].avg_session_min+'分钟', change:'', dir:'' }],
+  },
+  { // 5: Segment ARPU
+    match: /(用户分群|arpu|高价值|用户价值|分层|分群|沉默)/i,
+    sql: `SELECT segment, count, avg_revenue AS arpu, retention\nFROM user_segments\nORDER BY arpu DESC;`,
+    chart: 'bar', chartTitle:'用户分群ARPU对比', xKey:'segment',
+    series: [{ key:'arpu', label:'ARPU (元)', color:'#5B6AF0' }],
+    metrics: r => [{ label:'高价值ARPU', value:'¥'+r[0].arpu, change:'', dir:'' },
+                   { label:'高低比', value:(r[0].arpu/(r[r.length-1].arpu||1)).toFixed(0)+'倍', change:'', dir:'' }],
+  },
+  { // 6: Revenue trend
+    match: /(营收|收入|revenue|gmv|付费|金额)/i,
+    sql: `SELECT date, revenue, ROUND(revenue / dau, 2) AS arpu_daily\nFROM daily_metrics\nWHERE date >= DATE_SUB(CURDATE(), INTERVAL %DAYS% DAY)\nORDER BY date;`,
+    chart: 'line', chartTitle:'日营收趋势', xKey:'date',
+    series: [{ key:'revenue', label:'日营收(元)', color:'#5B6AF0' }, { key:'arpu_daily', label:'日ARPU', color:'#00C9A7', rightAxis:true }],
+    metrics: r => [{ label:'最新日营收', value:'¥'+fmtNum(r[r.length-1].revenue), change:'+8.3%', dir:'up' },
+                   { label:'30日总营收', value:'¥'+fmtNum(r.reduce((s,x)=>s+x.revenue,0)), change:'', dir:'' }],
+  },
+];
+
+// Default: general overview
+const defaultTemplate = {
+  match: /.*/, sql: `-- 通用运营数据概览查询\nSELECT * FROM daily_metrics ORDER BY date DESC LIMIT 7;`,
+  chart:'line', chartTitle:'近7日核心指标概览', xKey:'date',
+  series:[{ key:'dau', label:'DAU', color:'#5B6AF0' }, { key:'new_users', label:'新增用户', color:'#00C9A7' }],
+  metrics: r => [{ label:'最新DAU', value:fmtNum(r[r.length-1].dau), change:'+5.2%', dir:'up' },
+                 { label:'7日新增', value:fmtNum(r.reduce((s,x)=>s+x.new_users,0)), change:'', dir:'' }],
+};
+
+function fmtNum(n) { return n >= 10000 ? (n/10000).toFixed(1)+'万' : n.toLocaleString(); }
+function avgLast(arr, key, n) { const s = arr.slice(-n); return Math.round(s.reduce((a,x)=>a+x[key],0)/s.length); }
+function getMaxDrop(r) { let max=0,idx=0; r.forEach((x,i)=>{ if(i>0){ const d=(r[i-1].users-x.users)/r[i-1].users; if(d>max){max=d;idx=i;} }}); return (max*100).toFixed(1)+'% ('+r[idx-1].stage+'→'+r[idx].stage+')'; }
+
+function matchQuery(nl) {
+  for (const tpl of queryTemplates) {
+    if (tpl.match.test(nl)) return tpl;
+  }
+  return defaultTemplate;
+}
+
+function resolveDays(nl) {
+  const m = nl.match(/(\d+)\s*天/);
+  return m ? parseInt(m[1]) : 7;
+}
+
+function resolveData(tpl, nl) {
+  const days = resolveDays(nl);
+  switch (tpl.chartTitle) {
+    case '日活用户趋势':
+    case '用户留存率趋势':
+    case '日营收趋势':
+    case '近7日核心指标概览':
+      return { type:'daily', data: dailyData.slice(-days), days };
+    case '各渠道用户转化对比':
+      return { type:'channel', data: channelData };
+    case '用户转化漏斗':
+      return { type:'funnel', data: funnelStages };
+    case '本月各渠道新增用户占比':
+      return { type:'channelPie', data: channelData.map(c => ({ channel: c.channel, total_new_users: c.signups })) };
+    case '用户分群ARPU对比':
+      return { type:'segment', data: segmentData };
+    default:
+      return { type:'daily', data: dailyData.slice(-7), days: 7 };
+  }
+}
+
+function generateSQL(tpl, nl) {
+  const days = resolveDays(nl);
+  let sql = tpl.sql.replace('%DAYS%', days);
+  return sql;
+}
+
+// ═══════════════════════════════════════
+//  CHART RENDERER (Canvas)
+// ═══════════════════════════════════════
+function renderChart(canvasId, chartType, data, config) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width;
+  const H = chartType === 'funnel' ? 360 : 320;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const pad = { top:20, right:60, bottom:50, left:60 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  if (chartType === 'line') drawLineChart(ctx, data, config, pad, plotW, plotH, W, H);
+  else if (chartType === 'bar') drawBarChart(ctx, data, config, pad, plotW, plotH, W, H);
+  else if (chartType === 'funnel') drawFunnel(ctx, data, config, W, H);
+  else if (chartType === 'pie') drawPieChart(ctx, data, config, W, H);
+}
+
+function drawLineChart(ctx, data, config, pad, plotW, plotH, W, H) {
+  const { xKey, series } = config;
+  const allVals = series.flatMap(s => data.map(d => d[s.key]));
+  const yMin = 0;
+  const yMax = Math.max(...allVals) * 1.15;
+
+  // Grid
+  ctx.strokeStyle = '#F0F2F8'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (i / 4) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#8B8FA8'; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(yMax * (1 - i/4)).toLocaleString(), pad.left - 8, y + 4);
+  }
+
+  // X labels
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(data.length / 7));
+  data.forEach((d, i) => {
+    if (i % step !== 0 && i !== data.length - 1) return;
+    const x = pad.left + (i / (data.length - 1)) * plotW;
+    ctx.fillStyle = '#8B8FA8'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.fillText(d[xKey]?.slice(5) || d[xKey], x, pad.top + plotH + 18);
+  });
+
+  // Lines
+  series.forEach((s, si) => {
+    ctx.strokeStyle = s.color; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    data.forEach((d, i) => {
+      const x = pad.left + (i / (data.length - 1)) * plotW;
+      const y = pad.top + plotH - (d[s.key] / yMax) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Dots
+    data.forEach((d, i) => {
+      const x = pad.left + (i / (data.length - 1)) * plotW;
+      const y = pad.top + plotH - (d[s.key] / yMax) * plotH;
+      ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(x, y, i === data.length - 1 ? 5 : 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#FFF'; ctx.beginPath(); ctx.arc(x, y, i === data.length - 1 ? 2.5 : 0, 0, Math.PI * 2); ctx.fill();
+    });
+  });
+
+  // Legend
+  series.forEach((s, i) => {
+    const lx = pad.left + i * 160;
+    ctx.fillStyle = s.color; ctx.fillRect(lx, pad.top + plotH + 32, 14, 4);
+    ctx.fillStyle = '#3A3D52'; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(s.label, lx + 20, pad.top + plotH + 36);
+  });
+}
+
+function drawBarChart(ctx, data, config, pad, plotW, plotH, W, H) {
+  const { xKey, series } = config;
+  const maxVal = Math.max(...data.map(d => d[series[0].key])) * 1.2;
+  const barW = Math.min(60, (plotW / data.length) * 0.65);
+  const gap = plotW / data.length;
+
+  // Grid
+  ctx.strokeStyle = '#F0F2F8'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (i / 4) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#8B8FA8'; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxVal * (1 - i/4)).toLocaleString(), pad.left - 8, y + 4);
+  }
+
+  // Bars
+  data.forEach((d, i) => {
+    const x = pad.left + gap * i + (gap - barW) / 2;
+    const h = (d[series[0].key] / maxVal) * plotH;
+    const y = pad.top + plotH - h;
+    const grad = ctx.createLinearGradient(x, y, x, pad.top + plotH);
+    grad.addColorStop(0, series[0].color); grad.addColorStop(1, series[0].color + '44');
+    ctx.fillStyle = grad; ctx.beginPath();
+    roundedRect(ctx, x, y, barW, h, 6); ctx.fill();
+
+    // Label
+    ctx.fillStyle = '#3A3D52'; ctx.font = 'bold 11px -apple-system, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(fmtNum(d[series[0].key]), x + barW/2, y - 8);
+
+    // X label
+    const xl = (d[xKey]?.length > 5 ? d[xKey].slice(0,5)+'…' : d[xKey]) || '';
+    ctx.fillStyle = '#8B8FA8'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.fillText(xl, pad.left + gap * i + gap/2, pad.top + plotH + 18);
+  });
+}
+
+function roundedRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.arcTo(x+w, y, x+w, y+r, r);
+  ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+  ctx.lineTo(x+r, y+h); ctx.arcTo(x, y+h, x, y+h-r, r);
+  ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r); ctx.closePath();
+}
+
+function drawFunnel(ctx, data, config, W, H) {
+  const maxW = W * 0.7;
+  const barH = 50, gap = 18;
+  const totalH = data.length * (barH + gap);
+  const startY = (H - totalH) / 2;
+  const maxUsers = data[0].users;
+
+  data.forEach((d, i) => {
+    const w = (d.users / maxUsers) * maxW;
+    const x = (W - w) / 2;
+    const y = startY + i * (barH + gap);
+    const pct = ((d.users / maxUsers) * 100).toFixed(1);
+    const stepPct = d.prev ? ((d.users / d.prev) * 100).toFixed(1) : '—';
+
+    const colors = ['#5B6AF0', '#7B8AF8', '#9BAAFF', '#BCC8FF', '#DDE4FF'];
+    const grad = ctx.createLinearGradient(x, y, x + w, y);
+    grad.addColorStop(0, colors[i]); grad.addColorStop(1, colors[i] + '88');
+    ctx.fillStyle = grad; ctx.beginPath();
+    roundedRect(ctx, x, y, w, barH, 10); ctx.fill();
+
+    ctx.fillStyle = '#FFF'; ctx.font = 'bold 14px -apple-system, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(d.stage, W/2, y + 22);
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '12px -apple-system, sans-serif';
+    ctx.fillText(fmtNum(d.users) + ' 用户  |  ' + pct + '%  |  环节转化 ' + stepPct + '%', W/2, y + 42);
+  });
+}
+
+function drawPieChart(ctx, data, config, W, H) {
+  const cx = W * 0.4, cy = H / 2, r = Math.min(W * 0.32, H * 0.38);
+  const colors = ['#5B6AF0','#00C9A7','#FF6B6B','#FFB84D','#4EC5F1','#B8A0FF','#FF8FAF'];
+  const total = data.reduce((s, d) => s + d.total_new_users, 0);
+  let angle = -Math.PI / 2;
+
+  data.forEach((d, i) => {
+    const slice = (d.total_new_users / total) * Math.PI * 2;
+    ctx.fillStyle = colors[i % colors.length]; ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, angle, angle + slice); ctx.closePath(); ctx.fill();
+    // Label
+    const mid = angle + slice / 2;
+    const lx = cx + Math.cos(mid) * (r + 28);
+    const ly = cy + Math.sin(mid) * (r + 28);
+    ctx.fillStyle = '#3A3D52'; ctx.font = 'bold 11px -apple-system, sans-serif'; ctx.textAlign = mid > Math.PI/2 || mid < -Math.PI/2 ? 'right' : 'left';
+    ctx.fillText(d.channel?.length > 6 ? d.channel.slice(0,6)+'…' : (d.channel||''), lx, ly - 6);
+    ctx.fillStyle = '#8B8FA8'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.fillText(((d.total_new_users/total)*100).toFixed(1)+'%', lx, ly + 10);
+    angle += slice;
+  });
+
+  // Center text
+  ctx.fillStyle = '#3A3D52'; ctx.font = 'bold 14px -apple-system, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('总计', cx, cy - 6);
+  ctx.fillText(fmtNum(total), cx, cy + 14);
+}
+
+// ═══════════════════════════════════════
+//  MAIN LOGIC
+// ═══════════════════════════════════════
+let queryHistory = [];
+
+function quickQuery(q) {
+  document.getElementById('queryInput').value = q;
+  runQuery();
+}
+
+function runQuery() {
+  const nl = document.getElementById('queryInput').value.trim();
+  if (!nl) return;
+
+  const tpl = matchQuery(nl);
+  const sql = generateSQL(tpl, nl);
+  const resolved = resolveData(tpl, nl);
+  const days = resolveDays(nl);
+
+  // Update SQL display
+  document.getElementById('sqlDisplay').innerHTML = `<div class="sql-block">${highlightSQL(sql)}</div>`;
+
+  // Add to history
+  queryHistory.unshift({ nl, time: new Date().toLocaleTimeString() });
+  if (queryHistory.length > 20) queryHistory.pop();
+  renderHistory();
+
+  // Build right panel
+  buildDashboard(tpl, resolved, sql, nl, days);
+
+  document.getElementById('submitBtn').disabled = true;
+  setTimeout(() => document.getElementById('submitBtn').disabled = false, 600);
+}
+
+function buildDashboard(tpl, resolved, sql, nl, days) {
+  const right = document.getElementById('rightPanel');
+  const data = resolved.data;
+  const metrics = tpl.metrics(data);
+
+  let metricHTML = '';
+  if (metrics.length > 0) {
+    metricHTML = '<div class="metric-row">' + metrics.map(m => `
+      <div class="metric-card">
+        <div class="m-label">${m.label}</div>
+        <div class="m-value">${m.value}</div>
+        ${m.change ? `<div class="m-change ${m.dir}">${m.dir==='up'?'📈':'📉'} ${m.change}</div>` : ''}
+      </div>
+    `).join('') + '</div>';
+  }
+
+  let tableHTML = '';
+  if (resolved.type === 'channel' || resolved.type === 'channelPie') {
+    tableHTML = buildTable(data, ['channel','visitors','signups','conversions','conversion_rate','cost','roi']);
+  } else if (resolved.type === 'funnel') {
+    tableHTML = buildTable(data, ['stage','users']);
+  } else if (resolved.type === 'segment') {
+    tableHTML = buildTable(data, ['segment','count','arpu','retention']);
+  } else {
+    tableHTML = buildTable(data, ['date','dau','new_users','retention_7d','avg_session_min','revenue']);
+  }
+
+  right.innerHTML = `
+    ${metricHTML}
+    <div class="chart-panel">
+      <h3>📊 ${tpl.chartTitle} <span style="font-weight:400;font-size:.76rem;color:var(--muted);margin-left:auto;">基于 AI 自动生成的 SQL 查询</span></h3>
+      <div class="chart-canvas-wrap"><canvas id="mainChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <h3>📋 数据明细</h3>
+      <div class="data-table-wrap">${tableHTML}</div>
+    </div>
+  `;
+
+  // Render chart after DOM ready
+  setTimeout(() => renderChart('mainChart', tpl.chart, data, tpl), 100);
+}
+
+function buildTable(data, cols) {
+  if (!data || data.length === 0) return '<p style="color:var(--muted);">无数据</p>';
+  const labels = {
+    date:'日期', dau:'DAU', new_users:'新增用户', active_users:'活跃用户',
+    retention_7d:'7日留存', avg_session_min:'平均时长(分)', revenue:'营收(元)',
+    channel:'渠道', visitors:'访客', signups:'注册', conversions:'付费转化',
+    conversion_rate:'转化率(%)', cost:'投放成本(元)', roi:'ROI',
+    stage:'阶段', users:'用户数', total_new_users:'新增用户',
+    segment:'用户分群', count:'用户数', arpu:'ARPU(元)', retention:'留存率',
+  };
+  return `<table class="data-table"><thead><tr>${cols.map(c => `<th>${labels[c]||c}</th>`).join('')}</tr></thead><tbody>${
+    data.map(row => `<tr>${cols.map(c => {
+      let v = row[c];
+      if (typeof v === 'number') {
+        if (c.includes('retention') || c.includes('rate')) v = (v*100).toFixed(1)+'%';
+        else if (c === 'revenue' || c === 'cost' || c === 'arpu') v = '¥'+v.toLocaleString();
+        else if (c === 'roi') v = v.toFixed(1)+'x';
+        else if (v >= 1000) v = v.toLocaleString();
+        else v = typeof v === 'number' && v % 1 !== 0 ? v.toFixed(1) : v;
+      }
+      return `<td>${v ?? '—'}</td>`;
+    }).join('')}</tr>`).join('')
+  }</tbody></table>`;
+}
+
+function highlightSQL(sql) {
+  return sql
+    .replace(/\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|ASC|DESC|LIMIT|JOIN|ON|AS|AND|OR|OVER|BY|LAG|FIRST_VALUE|DATE_SUB|CURDATE|DATE_FORMAT|ROUND|SUM|INTERVAL|DAY|DESC|COUNT|AVG|MAX|MIN|INNER|LEFT|RIGHT|HAVING|UNION|DISTINCT|CASE|WHEN|THEN|ELSE|END)\b/gi, '<span class="keyword">$1</span>')
+    .replace(/('[\w%\-]+')/g, '<span class="string">$1</span>')
+    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="number">$1</span>')
+    .replace(/\b(FIRST_VALUE|LAG|DATE_SUB|CURDATE|DATE_FORMAT|ROUND)\b/gi, '<span class="func">$1</span>');
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (queryHistory.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px;">暂无查询记录</div>';
+    return;
+  }
+  el.innerHTML = queryHistory.map((h, i) => `
+    <div class="history-item" onclick="quickQuery('${h.nl.replace(/'/g, "\\'")}')">
+      <div style="font-weight:600;">${h.nl.length > 32 ? h.nl.slice(0,32)+'…' : h.nl}</div>
+      <div style="font-size:.7rem;color:var(--muted);">${h.time}</div>
+    </div>
+  `).join('');
+}
+
+function resetAll() {
+  document.getElementById('queryInput').value = '';
+  document.getElementById('sqlDisplay').innerHTML = '<div class="sql-empty">输入查询后，AI 将自动生成 SQL 语句</div>';
+  document.getElementById('rightPanel').innerHTML = `
+    <div class="right-empty">
+      <div class="icon">🔮</div>
+      <h3>AI 驱动的运营数据分析</h3>
+      <p>在左侧输入自然语言问题，AI 将自动生成 SQL、查询数据并生成可视化图表。支持趋势分析、漏斗分析、渠道对比、用户分群等多种运营场景。</p>
+    </div>`;
+  queryHistory = [];
+  renderHistory();
+}
+
+function exportReport() {
+  const right = document.getElementById('rightPanel');
+  if (right.querySelector('.right-empty')) { alert('请先执行查询分析'); return; }
+  const w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write(`<html><head><meta charset="UTF-8"><title>运营数据分析报告</title><style>body{font-family:-apple-system,sans-serif;padding:40px;color:#3A3D52;}h1{color:#1A1D2E;}canvas{max-width:100%;}</style></head><body><h1>📊 运营数据分析报告</h1><p>生成时间: ${new Date().toLocaleString()}</p><hr>${right.innerHTML}</body></html>`);
+  w.document.close();
+}
+
+// Keyboard shortcut
+document.getElementById('queryInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runQuery(); }
+});
+
+// Resize handler for canvas
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('mainChart');
+  if (!canvas) return;
+  const lastQuery = queryHistory[0];
+  if (lastQuery) { quickQuery(lastQuery.nl); }
+});
+</script>
+</body>
+</html>
