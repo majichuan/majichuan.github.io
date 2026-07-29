@@ -47,36 +47,54 @@
   /* ── Nav ── */
   .nav {
     position: fixed; top:0; left:0; right:0; z-index:100;
-    padding: 16px 40px;
-    display: flex; align-items: center; justify-content: space-between;
-    transition: all .35s ease;
-    background: transparent;
-  }
-  .nav.scrolled {
-    background: rgba(255,255,255,0.88);
+    padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.92);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 2px 20px rgba(180,150,200,0.1);
-    padding: 10px 40px;
+    border-bottom: 1px solid #F0E8F8;
+    box-shadow: 0 1px 12px rgba(180,150,200,0.08);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 1100px; padding: 0 40px;
   }
   .nav-logo {
-    font-size: 1.4rem; font-weight: 800;
+    display:flex; align-items:baseline; gap:10px;
+    white-space:nowrap;
+    font-size:1.1rem; font-weight:700;
     background: linear-gradient(135deg, var(--pink), var(--lavender));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
   }
-  .nav-links { display:flex; gap:28px; list-style:none; }
+  .nav-logo-divider {
+    width:1px; height:16px;
+    background: linear-gradient(180deg, transparent, #d0c0e8, transparent);
+    align-self:center;
+  }
+  .nav-logo-sub {
+    font-weight:500; letter-spacing:.06em;
+  }
+  .nav-links { display:flex; gap:6px; list-style:none; align-items:center; }
   .nav-links a {
-    text-decoration:none; color:var(--dark); font-weight:600; font-size:0.92rem;
-    position:relative; padding:4px 0; transition: color .25s;
+    text-decoration:none; color:var(--text); font-weight:600; font-size:0.82rem;
+    padding:10px 14px; border-radius:10px; transition: all .2s;
+    white-space: nowrap;
   }
-  .nav-links a::after {
-    content:''; position:absolute; bottom:0; left:0; width:0; height:2.5px;
-    border-radius:2px;
-    background: linear-gradient(90deg, var(--pink), var(--lavender));
-    transition: width .3s ease;
+  .nav-links a:hover { background: #F8F4FC; color: var(--pink); }
+  .theme-toggle {
+    display:flex; align-items:center; gap:0; cursor:pointer;
+    background:#F0E8F8; border:none; border-radius:20px; padding:3px;
+    margin-left:12px; transition:all .3s;
   }
-  .nav-links a:hover { color: var(--pink); }
-  .nav-links a:hover::after { width:100%; }
+  .theme-toggle span {
+    padding:5px 10px; border-radius:16px; font-size:.78rem;
+    transition:all .25s; font-weight:600;
+  }
+  .theme-toggle .tt-active {
+    background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.08);
+  }
+  body.theme-tech .theme-toggle { background:#1e2430; }
+  body.theme-tech .theme-toggle .tt-active { background:#2d3548; color:#e2e8f0; }
   .nav-toggle { display:none; flex-direction:column; gap:5px; cursor:pointer; z-index:101; }
   .nav-toggle span { width:26px; height:3px; background:var(--dark); border-radius:3px; transition:all .3s; }
 
@@ -85,7 +103,7 @@
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
     background: linear-gradient(170deg, #FFF0F5 0%, #FFF8FC 20%, #F8F4FF 40%, #FFF5F8 60%, #FFF8F0 80%, #F0F4FF 100%);
-    padding: 120px 40px 80px;
+    padding: 100px 40px 60px;
   }
   /* Animated candy blobs */
   .hero-blobs { position:absolute; inset:0; pointer-events:none; }
@@ -164,6 +182,20 @@
   .typing-done { border-right-color: transparent; animation: none; }
 
   .hero-cta { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+  /* Hero module nav pills */
+  .hero-modules { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:32px; }
+  .hero-module {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 18px; border-radius:50px; text-decoration:none;
+    font-size:.84rem; font-weight:600; color:var(--dark);
+    background:rgba(255,255,255,0.7); border:1.5px solid #E8DDF0;
+    transition:all .25s; cursor:pointer;
+  }
+  .hero-module:hover {
+    background:#fff; border-color:var(--pink);
+    transform:translateY(-2px); box-shadow:0 4px 16px rgba(255,123,166,0.2);
+  }
   .btn {
     display:inline-flex; align-items:center; gap:8px;
     padding: 14px 32px; border-radius:50px; font-weight:700; font-size:1rem;
@@ -196,8 +228,23 @@
   .section-desc { color:#8B7BA0; font-size:1.05rem; max-width:560px; margin-bottom:48px; }
   .container { max-width:1100px; margin:0 auto; }
 
+  /* ── Highlights ── */
+  #highlights { background: var(--white); padding: 48px 40px; }
+  .hl-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; max-width:1100px; margin:0 auto; }
+  .hl-card { text-align:center; padding:24px 16px; border-radius:16px; border:1px solid #F0E8F8; transition:all .3s; }
+  .hl-card:hover { transform:translateY(-3px); box-shadow: var(--shadow); }
+  .hl-card:nth-child(1) { border-top:3px solid var(--pink); }
+  .hl-card:nth-child(2) { border-top:3px solid var(--lavender); }
+  .hl-card:nth-child(3) { border-top:3px solid var(--babyblue); }
+  .hl-card:nth-child(4) { border-top:3px solid var(--mint); }
+  .hl-icon { font-size:1.6rem; margin-bottom:8px; }
+  .hl-value { font-size:1.5rem; font-weight:900; color:var(--dark); line-height:1.2; }
+  .hl-label { font-size:.82rem; color:#9988AA; font-weight:600; margin-top:4px; }
+  @media (max-width: 768px) { .hl-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .hl-grid { grid-template-columns: 1fr; } }
+
   /* ── About ── */
-  #about { background: var(--white); }
+  #about { background: var(--light); }
   .about-grid { display:grid; grid-template-columns: 1fr 1fr; gap:60px; align-items:center; }
   .about-text p { margin-bottom:18px; font-size:1.05rem; color:#6B5B7B; }
   .about-text p strong { color: var(--dark); }
@@ -310,20 +357,31 @@
   }
   #contact .section-title { color:#fff; }
   #contact .section-desc { color:#B0A0C0; margin-left:auto; margin-right:auto; }
-  .contact-links { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:32px; }
-  .contact-link {
-    display:inline-flex; align-items:center; gap:10px;
-    padding: 16px 28px; border-radius:50px; text-decoration:none;
-    font-weight:700; font-size:0.95rem;
-    transition:all .3s ease;
-    border: 2px solid rgba(255,255,255,0.12);
-    color: #C0B0D0; background: rgba(255,255,255,0.04);
+  .contact-buttons { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:32px; }
+  .cb-wrap { position:relative; display:inline-block; }
+  .cb-btn {
+    padding: 16px 32px; border-radius:50px; border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06); color: #D0C0E0;
+    font-weight:700; font-size:1rem; cursor:pointer; font-family:inherit;
+    transition:all .3s; white-space:nowrap;
   }
-  .contact-link:hover {
+  .cb-btn:hover {
     border-color: var(--lemon); color: var(--lemon);
     background: rgba(255,232,133,0.08); transform:translateY(-2px);
   }
-  .contact-email { font-size:1.3rem; font-weight:700; color:var(--lemon); margin-top:28px; }
+  .cb-bubble {
+    position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%);
+    background: var(--lemon); color: #2D2040; padding:10px 18px; border-radius:10px;
+    font-weight:700; font-size:.88rem; white-space:nowrap;
+    opacity:0; visibility:hidden; transition:all .25s;
+    pointer-events:none; z-index:10;
+  }
+  .cb-bubble::after {
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:6px solid transparent; border-top-color: var(--lemon);
+  }
+  .cb-wrap:hover .cb-bubble { opacity:1; visibility:visible; }
+  .cb-bubble.pinned { opacity:1 !important; visibility:visible !important; pointer-events:auto; }
 
   /* ── Footer ── */
   footer { background: #1E1630; color:#6B5B90; text-align:center; padding:28px 40px; font-size:0.85rem; }
@@ -334,15 +392,14 @@
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
-    .nav { padding:14px 20px; }
-    .nav.scrolled { padding:10px 20px; }
+    .nav-inner { padding:0 20px; }
     .nav-links {
       position:fixed; inset:0; background:rgba(255,255,255,0.97);
       backdrop-filter:blur(20px); flex-direction:column; align-items:center;
-      justify-content:center; gap:32px; transform:translateX(100%); transition:transform .4s ease;
+      justify-content:center; gap:24px; transform:translateX(100%); transition:transform .4s ease;
     }
     .nav-links.open { transform:translateX(0); }
-    .nav-links a { font-size:1.2rem; }
+    .nav-links a { font-size:1.1rem; padding:14px 24px; }
     .nav-toggle { display:flex; }
     .nav-toggle.open span:nth-child(1) { transform:rotate(45deg) translate(5px,6px); }
     .nav-toggle.open span:nth-child(2) { opacity:0; }
@@ -361,6 +418,120 @@
     .skills-grid { grid-template-columns: 1fr; }
     .hero-cta { flex-direction:column; align-items:center; }
   }
+
+  /* ═══════════════════════════════════════════ */
+  /*  TECH THEME — 科技感 / 深色 */
+  /* ═══════════════════════════════════════════ */
+  body.theme-tech {
+    --pink: #00d4ff;
+    --peach: #5b8def;
+    --lemon: #00d4ff;
+    --mint: #3ddc84;
+    --babyblue: #5b8def;
+    --lavender: #7c5cfc;
+    --rose: #ff6b9d;
+    --coral: #ff6b6b;
+    --dark: #e2e8f0;
+    --text: #c9d1d9;
+    --light: #0a0e14;
+    --white: #141820;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+    color: var(--text);
+    background: var(--light);
+  }
+  body.theme-tech .hero {
+    background: linear-gradient(170deg, #0d1117 0%, #0d1525 30%, #121028 60%, #0d1117 100%);
+  }
+  body.theme-tech .blob-1 { background: radial-gradient(circle, #00d4ff22, transparent 70%); }
+  body.theme-tech .blob-2 { background: radial-gradient(circle, #5b8def22, transparent 70%); }
+  body.theme-tech .blob-3 { background: radial-gradient(circle, #7c5cfc22, transparent 70%); }
+  body.theme-tech .blob-4 { background: radial-gradient(circle, #00d4ff18, transparent 70%); }
+  body.theme-tech .blob-5 { background: radial-gradient(circle, #3ddc8418, transparent 70%); }
+  body.theme-tech .nav {
+    background: rgba(13,17,23,0.92);
+    border-bottom: 1px solid #1e2430;
+    box-shadow: 0 1px 12px rgba(0,0,0,0.3);
+  }
+  body.theme-tech .nav-links a { color: #c9d1d9; }
+  body.theme-tech .nav-links a:hover { background: #1e2430; color: #00d4ff; }
+  body.theme-tech .hero-badge {
+    background: rgba(0,212,255,0.1); color: #00d4ff;
+  }
+  body.theme-tech .section-label {
+    background: linear-gradient(135deg, #00d4ff, #5b8def);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body.theme-tech .stat-card { border-color: #1e2430; }
+  body.theme-tech .stat-card:nth-child(1) { border-top-color: #00d4ff; }
+  body.theme-tech .stat-card:nth-child(2) { border-top-color: #5b8def; }
+  body.theme-tech .stat-card:nth-child(3) { border-top-color: #7c5cfc; }
+  body.theme-tech .stat-card:nth-child(4) { border-top-color: #00d4ff; }
+  body.theme-tech .stat-number {
+    background: linear-gradient(135deg, #00d4ff, #7c5cfc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body.theme-tech .stat-label { color: #6b7280; }
+  body.theme-tech .hl-card { border-color: #1e2430; }
+  body.theme-tech .hl-card:nth-child(1) { border-top-color: #00d4ff; }
+  body.theme-tech .hl-card:nth-child(2) { border-top-color: #5b8def; }
+  body.theme-tech .hl-card:nth-child(3) { border-top-color: #7c5cfc; }
+  body.theme-tech .hl-card:nth-child(4) { border-top-color: #3ddc84; }
+  body.theme-tech .hl-value { color: #e2e8f0; }
+  body.theme-tech .hl-label { color: #6b7280; }
+  body.theme-tech .timeline::before { background: linear-gradient(180deg, #00d4ff, #5b8def, #7c5cfc, #00d4ff, #3ddc84); }
+  body.theme-tech .timeline-dot { border-color: var(--white); box-shadow: 0 0 0 3px #00d4ff; background: #00d4ff; }
+  body.theme-tech .skill-card { border-color: #1e2430; }
+  body.theme-tech .skill-tag { background:#1e2430; color:#8b949e; }
+  body.theme-tech .project-card { border-color: #1e2430; }
+  body.theme-tech .project-tag:nth-child(odd) { background: #0d2a33; color: #00d4ff; }
+  body.theme-tech .project-tag:nth-child(even) { background: #1e1a33; color: #7c5cfc; }
+  body.theme-tech .hero-module { background: rgba(22,27,34,0.8); border-color: #1e2430; color: #c9d1d9; }
+  body.theme-tech .hero-module:hover { background:#1e2430; border-color:#00d4ff; box-shadow:0 4px 16px rgba(0,212,255,0.15); }
+  body.theme-tech .about-text p { color: #8b949e; }
+  body.theme-tech .about-text p strong { color: #e2e8f0; }
+  body.theme-tech .timeline-details li { color: #8b949e; }
+  body.theme-tech .timeline-details li::before { color: #00d4ff; }
+  body.theme-tech .timeline-period { color: #00d4ff; }
+  body.theme-tech .timeline-company { color: #e2e8f0; }
+  body.theme-tech .timeline-role { color: #6b7280; }
+  body.theme-tech .project-header { background: #161b22 !important; }
+  body.theme-tech #about { background: #11161e; }
+  body.theme-tech #experience { background: #0d1119; }
+  body.theme-tech #skills { background: #11161e; }
+  body.theme-tech #projects { background: #0d1119; }
+  body.theme-tech #highlights { background: #11161e; }
+  body.theme-tech #contact { background: linear-gradient(160deg, #0d1117 0%, #121028 100%); }
+  body.theme-tech #contact .section-desc { color: #6b7280; }
+  body.theme-tech .cb-btn { border-color: rgba(255,255,255,0.08); color: #8b949e; background: rgba(255,255,255,0.03); }
+  body.theme-tech .cb-btn:hover { border-color: #00d4ff; color: #00d4ff; background: rgba(0,212,255,0.06); }
+  body.theme-tech .btn-outline { border-color: #1e2430; color: #c9d1d9; }
+  body.theme-tech .btn-outline:hover { border-color: #00d4ff; color: #00d4ff; }
+  body.theme-tech .section-desc { color: #6b7280; }
+  body.theme-tech .nav-links { background: rgba(10,14,20,0.97); }
+  body.theme-tech .nav-links a { color: #c9d1d9; }
+  body.theme-tech .nav-toggle span { background: #c9d1d9; }
+  body.theme-tech .project-header { background: #1a1d28 !important; }
+  /* Card surfaces lightened for contrast */
+  body.theme-tech .stat-card { background: #1a1f2b; border-color: #252b38; }
+  body.theme-tech .hl-card { background: #1a1f2b; border-color: #252b38; }
+  body.theme-tech .skill-card { background: #1a1f2b; border-color: #252b38; }
+  body.theme-tech .project-card { background: #1a1f2b; border-color: #252b38; }
+  body.theme-tech .card:hover, body.theme-tech .stat-card:hover,
+  body.theme-tech .skill-card:hover, body.theme-tech .project-card:hover,
+  body.theme-tech .hl-card:hover { border-color: #3d4a5c; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  body.theme-tech .skill-tag { background: #1e2430; color: #a0a8b4; }
+  body.theme-tech .project-body p { color: #8b949e; }
+  body.theme-tech .project-card h3 { color: #e2e8f0; }
+  body.theme-tech .hero-module { background: rgba(26,31,43,0.9); border-color: #252b38; }
+  body.theme-tech .cb-bubble { background: #00d4ff; color: #0a0e14; }
+  body.theme-tech .cb-bubble::after { border-top-color: #00d4ff; }
+  body.theme-tech .cb-btn:hover { border-color: #00d4ff; color: #00d4ff; background: rgba(0,212,255,0.06); }
+  body.theme-tech .timeline-details li { color: #a0a8b4; }
+  body.theme-tech .timeline-role { color: #8892a0; }
+</style>
 </style>
 </head>
 <body>
@@ -370,16 +541,27 @@
 
 <!-- Nav -->
 <nav class="nav" id="nav">
-  <div class="nav-logo">🍬 马积川</div>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#about" onclick="closeNav()">关于我</a></li>
-    <li><a href="#experience" onclick="closeNav()">工作经历</a></li>
-    <li><a href="#skills" onclick="closeNav()">技能</a></li>
-    <li><a href="#projects" onclick="closeNav()">AI作品</a></li>
-    <li><a href="#contact" onclick="closeNav()">联系</a></li>
-  </ul>
-  <div class="nav-toggle" id="navToggle" onclick="toggleNav()">
-    <span></span><span></span><span></span>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <span>马积川</span>
+      <span class="nav-logo-divider"></span>
+      <span class="nav-logo-sub">个人网站</span>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#highlights" onclick="closeNav()">📋 核心信息</a></li>
+      <li><a href="#about" onclick="closeNav()">👤 关于我</a></li>
+      <li><a href="#experience" onclick="closeNav()">💼 工作经历</a></li>
+      <li><a href="#skills" onclick="closeNav()">🛠 技能</a></li>
+      <li><a href="#projects" onclick="closeNav()">🤖 AI作品</a></li>
+      <li><a href="#contact" onclick="closeNav()">📬 联系我</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
+      <span id="ttCandy">☀️</span>
+      <span id="ttTech">🚀</span>
+    </button>
+    <div class="nav-toggle" id="navToggle" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </nav>
 
@@ -408,6 +590,40 @@
     <div class="hero-cta">
       <a href="#contact" class="btn btn-primary">✨ 联系我</a>
       <a href="#experience" class="btn btn-outline">查看履历 ↓</a>
+    </div>
+    <div class="hero-modules">
+      <a href="#highlights" class="hero-module">📋 核心信息</a>
+      <a href="#about" class="hero-module">👤 关于我</a>
+      <a href="#experience" class="hero-module">💼 工作经历</a>
+      <a href="#skills" class="hero-module">🛠 技能</a>
+      <a href="#projects" class="hero-module">🤖 AI作品</a>
+      <a href="#contact" class="hero-module">📬 联系我</a>
+    </div>
+  </div>
+</section>
+
+<!-- Highlights -->
+<section id="highlights">
+  <div class="hl-grid reveal">
+    <div class="hl-card">
+      <div class="hl-icon">📅</div>
+      <div class="hl-value">8年+</div>
+      <div class="hl-label">互联网运营经验</div>
+    </div>
+    <div class="hl-card">
+      <div class="hl-icon">🏢</div>
+      <div class="hl-value">美团 / 好未来</div>
+      <div class="hl-label">核心履历 · 985本科</div>
+    </div>
+    <div class="hl-card">
+      <div class="hl-icon">🤖</div>
+      <div class="hl-value">6件AI作品</div>
+      <div class="hl-label">全栈系统 + 数据分析</div>
+    </div>
+    <div class="hl-card">
+      <div class="hl-icon">🎯</div>
+      <div class="hl-value">AI 产品运营</div>
+      <div class="hl-label">增长 / 用户 / 社区方向</div>
     </div>
   </div>
 </section>
@@ -587,10 +803,10 @@
       </div>
       <div class="project-card" style="border-top:4px solid var(--lavender);">
         <div class="project-header" style="background:linear-gradient(135deg,#F0F4FF,#E8ECFF);">
-          <div class="project-icon">📈</div><h3>纳指投资顾问智能体</h3>
+          <div class="project-icon">📈</div><h3>投资顾问智能体</h3>
         </div>
         <div class="project-body">
-          <p>知识蒸馏系统：大表哥碎片化投资内容 → <strong>结构化知识库 → Agent 对话式输出</strong>。把非结构化信息提炼为可查询的投资决策支持系统，底层能力与「用户反馈分析」完全一致。</p>
+          <p>知识蒸馏系统：投资博主碎片化投资内容 → <strong>结构化知识库 → Agent 对话式输出</strong>。把非结构化信息提炼为可查询的投资决策支持系统，底层能力与「用户反馈分析」完全一致。</p>
           <div class="project-tags"><span class="project-tag">知识蒸馏</span><span class="project-tag">Agent</span><span class="project-tag">知识库</span><span class="project-tag">非结构化→结构化</span></div>
         </div>
       </div>
@@ -639,12 +855,20 @@
     <span class="section-label">Contact</span>
     <h2 class="section-title">联系我</h2>
     <p class="section-desc">正在寻找 AI 产品运营 / 增长运营 / 用户运营岗位机会。如果您的团队需要一位懂运营、会 AI 的伙伴，欢迎联系。</p>
-    <div class="contact-links reveal">
-      <a href="mailto:18509717089@163.com" class="contact-link">📧 发送邮件</a>
-      <a href="#" class="contact-link">💬 微信：vaj1197457738</a>
-      <a href="#" class="contact-link">🔗 即刻 / 公众号</a>
+    <div class="contact-buttons reveal">
+      <div class="cb-wrap">
+        <button class="cb-btn" data-contact="email" data-value="18509717089@163.com">📧 邮箱</button>
+        <span class="cb-bubble" id="bubble-email">18509717089@163.com</span>
+      </div>
+      <div class="cb-wrap">
+        <button class="cb-btn" data-contact="wechat" data-value="vaj1197457738">💬 微信</button>
+        <span class="cb-bubble" id="bubble-wechat">vaj1197457738</span>
+      </div>
+      <div class="cb-wrap">
+        <button class="cb-btn" data-contact="phone" data-value="17610087089">📱 电话</button>
+        <span class="cb-bubble" id="bubble-phone">17610087089</span>
+      </div>
     </div>
-    <p class="contact-email">18509717089@163.com</p>
   </div>
 </section>
 
@@ -653,6 +877,25 @@
 </footer>
 
 <script>
+  // ═══════════════════════════════════════
+  //  THEME TOGGLE
+  // ═══════════════════════════════════════
+  (function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'tech') document.body.classList.add('theme-tech');
+    updateToggleUI();
+  })();
+  function toggleTheme() {
+    document.body.classList.toggle('theme-tech');
+    localStorage.setItem('theme', document.body.classList.contains('theme-tech') ? 'tech' : 'candy');
+    updateToggleUI();
+  }
+  function updateToggleUI() {
+    const isTech = document.body.classList.contains('theme-tech');
+    document.getElementById('ttCandy').className = isTech ? '' : 'tt-active';
+    document.getElementById('ttTech').className = isTech ? 'tt-active' : '';
+  }
+
   // ═══════════════════════════════════════
   //  CANDY PARTICLES — floating sparkles
   // ═══════════════════════════════════════
@@ -792,11 +1035,6 @@
   // ═══════════════════════════════════════
   //  NAV
   // ═══════════════════════════════════════
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
-
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
   function toggleNav() {
@@ -817,6 +1055,21 @@
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ═══════════════════════════════════════
+  //  CONTACT BUBBLES — hover show, click pin
+  // ═══════════════════════════════════════
+  document.querySelectorAll('.cb-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bubble = btn.parentElement.querySelector('.cb-bubble');
+      bubble.classList.toggle('pinned');
+    });
+  });
+  // Click anywhere else to unpin all bubbles
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.cb-bubble.pinned').forEach(b => b.classList.remove('pinned'));
+  });
 
   // ═══════════════════════════════════════
   //  AVATAR — click to upload photo
