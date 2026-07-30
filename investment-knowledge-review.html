@@ -234,6 +234,7 @@ blockquote {
   <a href="#s3">③ 解决方案</a>
   <a href="#s4">④ 优化方向</a>
   <a href="#s5">⑤ 业务应用</a>
+  <a href="#s6">⑥ 蒸馏 vs RAG</a>
   <a href="./index.html#project-investment-advisor" style="color:var(--gold);border-bottom-color:var(--gold);" title="跳转到个人网站 → 投资顾问智能体">🤖 投资顾问智能体 ↗</a>
 </nav>
 
@@ -896,6 +897,168 @@ blockquote {
       <p>追踪行业报告、政策文件、投资动向 → 自动蒸馏为趋势简报。帮助团队在做季度规划时，有更全面的外部视角。</p>
       <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：战略/市场岗</p>
     </div>
+  </div>
+</div>
+
+<!-- ===== 六、蒸馏 vs RAG ===== -->
+<div class="section" id="s6">
+  <div class="section-title"><span class="num">6</span> 蒸馏 vs RAG：为什么不直接用 RAG？</div>
+  <p class="section-desc">面试官可能会问的一个关键问题——你做的就是"把文章喂给 AI 然后可以问答"，那跟 RAG 有什么本质区别？</p>
+
+  <!-- 一句话类比 -->
+  <blockquote style="border-left-color:var(--purple);background:rgba(163,113,247,0.08);">
+    <strong>一句话讲清楚区别：</strong><br><br>
+    <span style="font-size:16px;"><strong>蒸馏</strong> = 你读完一本书，用自己的话做了<strong>结构化笔记</strong>。以后查笔记就行。</span><br>
+    <span style="font-size:16px;"><strong>RAG</strong> = 你把书撕成碎片扔进一个桶里，每次有人提问题，从桶里<strong>捞几片最相关的碎片</strong>拼起来给人看。</span>
+  </blockquote>
+
+  <h3 style="margin-top:24px;margin-bottom:12px;font-size:18px;">本质区别：什么时候理解文章？</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th style="width:18%;">维度</th><th style="width:41%;">蒸馏（我的方式）</th><th>传统 RAG</th></tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">理解时机</td>
+        <td><strong>入库时（提前）</strong></td>
+        <td>提问时（临时）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">AI 看到什么</td>
+        <td>逐字读完 5000 字全文，在完整语境下判断每句话该不该提取</td>
+        <td>原文被切成 500 字 chunk，按语义相似度匹配几个碎片塞给 LLM</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">存储形式</td>
+        <td>8 大主题的结构化条目 + 表格 + 金句</td>
+        <td>一堆向量 chunk，不改变原文形态</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">回答时</td>
+        <td>直接查知识库 → 主题条目精准命中</td>
+        <td>检索几个 chunk → LLM 现编回答</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">预处理成本</td>
+        <td>高（15-25 分钟/篇）</td>
+        <td>极低（几分钟/百篇）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan);font-weight:600;">查询成本</td>
+        <td>极低（一行定位）</td>
+        <td>每次提问重新烧 token</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3 style="margin-top:32px;margin-bottom:12px;font-size:18px;">蒸馏 vs RAG：5 大维度深度对比</h3>
+
+  <!-- 蒸馏优势 -->
+  <h4 style="margin-top:16px;color:var(--green);">✅ 蒸馏的 5 个优势</h4>
+
+  <div class="card" style="border-left:3px solid var(--green);">
+    <h3>① 理解深度不是一个级别</h3>
+    <p><strong>蒸馏</strong>：读完 5000 字全文，理解作者完整逻辑链之后才判断"这段话要不要提取"。一个论点跨越三个段落，我能在全文语境下理解它。</p>
+    <p style="margin-top:8px;"><strong>RAG</strong>：如果某个推理逻辑恰好跨了两个 chunk（各 500 字），RAG 看到的只是两个孤立碎片——可能永远拼不回完整的论证。</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--green);">
+    <h3>② 去重和知识合成</h3>
+    <p><strong>蒸馏</strong>：5 篇文章都讲「网格交易」，在知识库里合成一个完整条目，最新数据覆盖旧数据。不会看到 5 个重复的"网格是什么"。</p>
+    <p style="margin-top:8px;"><strong>RAG</strong>：5 篇文章的 chunk 都躺在数据库里。问"网格怎么设"，可能捞出来 5 个回答让你自己判断哪个是最新的。</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--green);">
+    <h3>③ 真金白银需要零幻觉</h3>
+    <p><strong>蒸馏</strong>：知识库条目是"从原文提取的事实"。我可能在蒸馏时漏掉内容，但<span class="highlight">不会凭空编造一个数据</span>。</p>
+    <p style="margin-top:8px;"><strong>RAG</strong>：塞 3 个 chunk → LLM 现场总结。但 LLM 可能把 chunk A 的止盈价和 chunk B 的网格参数混在一起，<span class="warn">生成一个不存在的数字</span>——在投资场景这是致命的。</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--green);">
+    <h3>④ 检索效率和精准度</h3>
+    <p><strong>蒸馏</strong>：问"当前仓位多少"→ 查知识库「一、大表哥其人 → 核心数据」→ 直接返回 83%。一行的事。</p>
+    <p style="margin-top:8px;"><strong>RAG</strong>：搜索"仓位"→ 捞出 5 个 chunk → LLM 读完判断哪个是最新的 → 翻遍 5 个 chunk 才发现最新数据在第 3 个。每个问题重新烧一遍 token。</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--green);">
+    <h3>⑤ 金句和风格保留</h3>
+    <p><strong>蒸馏</strong>：金句原封不动用引用块标注，智能体回答时可以直接引用作者原话。</p>
+    <p style="margin-top:8px;"><strong>RAG</strong>：chunk 里可能有金句也可能没有，纯靠检索运气。</p>
+  </div>
+
+  <!-- 蒸馏劣势 -->
+  <h4 style="margin-top:32px;color:var(--red);">⚠️ 蒸馏的 5 个劣势（诚实面对）</h4>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">劣势 1</span> 前置成本高</h3>
+    <p>每篇文章需要子代理存档 + 主代理蒸馏，一篇 15-25 分钟。127 篇文章就是几十个小时的 AI 对话。而 RAG：文档丢进去 → embed → 几分钟即可查询。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">劣势 2</span> 不实时、不自动</h3>
+    <p>蒸馏是手动触发、串行处理的。文章发了要等流程跑完。RAG 可以 hook 上 RSS/API，新文章自动入库。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">劣势 3</span> 单一判断视角</h3>
+    <p>蒸馏的判断标准是 Claude 单方面定的。可能对"什么是重要的"有系统性偏见——比如之前漏掉了财富观和心态类内容。RAG：不筛选、不改写，所有原文一视同仁。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">劣势 4</span> 覆盖范围受限于预设结构</h3>
+    <p>蒸馏的知识库有 8 大主题。如果提了一个不在预设框架内的问题（比如"大表哥用过哪些券商APP"），可能找不到答案。RAG：任何问题都能搜，不依赖预设分类。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">劣势 5</span> 依赖原文回查</h3>
+    <p>蒸馏覆盖不到的内容，必须回到 Part 2 原文看。RAG 不需要这一步——它直接搜所有 chunk。</p>
+  </div>
+
+  <!-- 运营场景匹配 -->
+  <h3 style="margin-top:32px;margin-bottom:12px;font-size:18px;">结合运营工作：什么场景该用哪个？</h3>
+
+  <div class="card-grid-3">
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <h3>🔬 蒸馏更适合</h3>
+      <p style="margin-bottom:6px;"><strong>竞品动态追踪</strong>——竞品策略变化需要精确记录，不能靠 chunk 拼凑，更不能让 AI 编一个不存在的竞品动作</p>
+      <p style="margin-bottom:6px;"><strong>A/B 实验结论库</strong>——实验数据必须逐字准确。RAG 说"大概提升了 8% 左右"——面试官会觉得你不专业</p>
+      <p style="margin-bottom:6px;"><strong>用户反馈 → 需求映射</strong>——从非结构化反馈中提炼高频痛点排序、频次×严重度矩阵，和投资知识蒸馏完全同款逻辑</p>
+      <p><strong>新人入职知识包</strong>——需要人工筛选和结构化，不能靠 chunk 随机拼凑</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan);">
+      <h3>🔍 RAG 更适合</h3>
+      <p style="margin-bottom:6px;"><strong>日常客服 FAQ</strong>——问题五花八门，蒸馏来不及，RAG 几秒钟覆盖 80%</p>
+      <p style="margin-bottom:6px;"><strong>社群内容选题发现</strong>——用户在聊什么，需要广度搜索而非深度理解</p>
+      <p style="margin-bottom:6px;"><strong>行业趋势简报</strong>——信息源多、更新快、深度要求不高</p>
+      <p><strong>临时数据查询</strong>——"上周三的邮件里提过某个数"，翻原文比蒸馏快</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue);">
+      <h3>🔀 两者组合更优</h3>
+      <p style="margin-bottom:6px;"><strong>周报/月报生成</strong>——数据（蒸馏提供精准数字）+ 行业背景（RAG 提供广度信息）</p>
+      <p style="margin-bottom:6px;"><strong>产品文档知识库</strong>——PRD 要点（蒸馏，快速了解产品）+ 完整原文（RAG，需要细节时回查）</p>
+      <p><strong>用户分层策略</strong>——分层规则（蒸馏保证一致性）+ 具体用户案例检索（RAG 灵活匹配）</p>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>🎯 判断口诀（面试时可以用）：</strong><br><br>
+    "需要<strong>精确决策</strong>的，用蒸馏——把信息在入库时吃透。<br>
+     需要<strong>广度覆盖</strong>的，用 RAG——保留原文随时搜。<br>
+     日常大多数场景，<strong>两者组合</strong>最好。"<br><br>
+    <strong>本质一句话：</strong>蒸馏是<strong>预处理成本换查询质量</strong>的取舍。你的场景（真金白银投资决策，或者需要精确数据的运营决策）值得付这个成本。
+  </blockquote>
+
+  <!-- 总结对比表 -->
+  <h3 style="margin-top:28px;margin-bottom:12px;font-size:18px;">一表总结</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th style="width:18%;">对比维度</th><th style="width:41%;">蒸馏</th><th>RAG</th></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">核心动作</td><td>提前理解 → 结构化存储</td><td>原文切块 → 提问时搜索拼凑</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">入库速度</td><td>慢（15-25 min/篇）</td><td>极快（秒级）</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">查询质量</td><td>高（精准、零幻觉）</td><td>中（依赖 chunk 匹配运气）</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">去重合成</td><td>✅ 天然支持</td><td>❌ 需要额外处理</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">实时性</td><td>❌ 手动触发</td><td>✅ 可自动化</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">数据准确性</td><td>从原文提取，不编造</td><td>LLM 可能"融合"多 chunk 产生幻觉</td></tr>
+      <tr><td style="color:var(--cyan);font-weight:600;">适用场景</td><td>需要精确决策、深度理解</td><td>需要广度覆盖、快速响应</td></tr>
+    </table>
   </div>
 </div>
 
