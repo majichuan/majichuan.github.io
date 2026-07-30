@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel → PPT Skill 项目复盘 — Alex 面试作品</title>
+<style>
+/* ===== 暗色主题设计系统 ===== */
+:root {
+  --bg-deep: #0d1117;
+  --bg-card: #161b22;
+  --bg-elevated: #1c2333;
+  --border: #2a3346;
+  --border-visible: #3a4560;
+  --text-primary: #e6edf3;
+  --text-secondary: #a4b4c4;
+  --text-muted: #6e7a8a;
+  --cyan: #39d2c0;
+  --cyan-dim: #2ba899;
+  --blue: #58a6ff;
+  --blue-dim: #3d7ec9;
+  --purple: #a371f7;
+  --purple-dim: #7c4ec4;
+  --gold: #e3b341;
+  --red: #f85149;
+  --green: #3fb950;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.25s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.72;
+  font-size: 15px;
+}
+
+/* ===== 导航 ===== */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav a {
+  color: var(--text-secondary); text-decoration: none;
+  padding: 12px 16px; font-size: 13px; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: var(--transition);
+}
+.nav a:hover, .nav a.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* ===== 主容器 ===== */
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ===== Hero ===== */
+.hero {
+  text-align: center; padding: 60px 0 48px;
+  border-bottom: 1px solid var(--border); margin-bottom: 48px;
+}
+.hero .badge {
+  display: inline-block; background: rgba(57,210,192,0.12); color: var(--cyan);
+  padding: 4px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 20px;
+  border: 1px solid rgba(57,210,192,0.25);
+}
+.hero h1 {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle { color: var(--text-secondary); font-size: 16px; margin-top: 12px; }
+.hero .meta { color: var(--text-muted); font-size: 13px; margin-top: 8px; }
+
+/* ===== 章节 ===== */
+.section { margin-bottom: 56px; }
+.section-title {
+  font-size: 24px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+}
+.section-title .num {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #000; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; font-size: 16px; font-weight: 800; flex-shrink: 0;
+}
+.section-desc { color: var(--text-secondary); margin-bottom: 28px; font-size: 14px; }
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  transition: var(--transition);
+}
+.card:hover { border-color: var(--border-visible); }
+.card h3 { font-size: 17px; margin-bottom: 8px; color: var(--text-primary); }
+.card p { color: var(--text-secondary); font-size: 14px; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.card-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+/* ===== 问题/方案卡片 ===== */
+.problem-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--red);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+}
+.solution-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+}
+.problem-card h3, .solution-card h3 { font-size: 16px; margin-bottom: 6px; }
+.problem-card p, .solution-card p { color: var(--text-secondary); font-size: 14px; }
+
+/* ===== 流程图 ===== */
+.flow {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 6px; margin: 32px 0; font-size: 13px;
+}
+.flow-node {
+  background: var(--bg-elevated); border: 1px solid var(--border-visible);
+  border-radius: var(--radius-sm); padding: 12px 14px; text-align: center;
+  min-width: 90px; transition: var(--transition);
+}
+.flow-node:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.flow-node .icon { font-size: 22px; margin-bottom: 4px; }
+.flow-node .label { color: var(--text-primary); font-weight: 600; font-size: 12px; }
+.flow-node .sub { color: var(--text-muted); font-size: 10px; margin-top: 2px; }
+.flow-arrow { color: var(--cyan); font-size: 18px; font-weight: 700; }
+
+/* ===== 两段流程图（A段 + B段） ===== */
+.flow-section { margin: 24px 0; }
+.flow-section h4 { color: var(--text-primary); margin-bottom: 12px; font-size: 15px; }
+
+/* ===== 表格 ===== */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--bg-elevated); color: var(--cyan); font-weight: 600; font-size: 12px; white-space: nowrap; }
+td { color: var(--text-secondary); }
+tr:last-child td { border-bottom: none; }
+
+/* ===== 可折叠 ===== */
+details {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); margin: 12px 0; overflow: hidden;
+}
+summary {
+  padding: 14px 20px; cursor: pointer; font-weight: 600; font-size: 14px;
+  color: var(--blue); user-select: none; display: flex; align-items: center; gap: 8px;
+}
+summary::before { content: '▸'; font-size: 10px; transition: var(--transition); display: inline-block; }
+details[open] summary::before { transform: rotate(90deg); }
+details .detail-content { padding: 0 20px 20px; color: var(--text-secondary); font-size: 14px; }
+details .detail-content p { margin-bottom: 12px; }
+
+/* ===== 标签 ===== */
+.tag {
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px;
+  font-weight: 600;
+}
+.tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-cyan { background: rgba(57,210,192,0.15); color: var(--cyan); }
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
+.tag-purple { background: rgba(163,113,247,0.15); color: var(--purple); }
+.tag-gold { background: rgba(227,179,65,0.15); color: var(--gold); }
+
+/* ===== 引用块 ===== */
+blockquote {
+  border-left: 3px solid var(--cyan);
+  background: rgba(57,210,192,0.06);
+  padding: 14px 20px; margin: 16px 0; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary); font-size: 14px;
+}
+
+/* ===== 高亮 ===== */
+.highlight { color: var(--cyan); font-weight: 600; }
+.warn { color: var(--gold); font-weight: 600; }
+
+/* ===== 场景卡片（业务应用） ===== */
+.scenario-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-visible);
+  border-radius: var(--radius); padding: 28px; margin-bottom: 24px;
+  border-top: 3px solid var(--cyan);
+}
+.scenario-card:nth-child(2) { border-top-color: var(--blue); }
+.scenario-card:nth-child(3) { border-top-color: var(--purple); }
+.scenario-card h3 { font-size: 20px; margin-bottom: 6px; }
+.scenario-card .who { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
+.scenario-card .flow-mini {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin: 16px 0; font-size: 13px;
+}
+.flow-mini .step {
+  background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.3);
+  padding: 8px 14px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ===== 底部 ===== */
+.footer {
+  text-align: center; padding: 40px 0; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 13px; margin-top: 48px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 26px; }
+  .section-title { font-size: 20px; }
+  .flow { gap: 4px; }
+  .flow-node { min-width: 70px; padding: 8px 10px; font-size: 11px; }
+  .flow-arrow { font-size: 14px; }
+  .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+  table { font-size: 12px; }
+  th, td { padding: 8px 10px; }
+}
+
+/* ===== 对比表高亮 ===== */
+.compare-table td:first-child { color: var(--text-primary); font-weight: 500; }
+.compare-table .before { background: rgba(248,81,73,0.08); }
+.compare-table .after { background: rgba(63,185,80,0.08); }
+
+/* ===== timeline 步骤条 ===== */
+.timeline-steps {
+  display: flex; flex-direction: column; gap: 0; margin: 16px 0;
+}
+.timeline-step {
+  display: flex; gap: 16px; padding: 8px 0; position: relative;
+}
+.timeline-step .ts-num {
+  width: 32px; height: 32px; min-width: 32px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  background: var(--bg-elevated); border: 2px solid var(--border-visible);
+  color: var(--text-secondary); position: relative; z-index: 1;
+}
+.timeline-step .ts-content { padding-top: 4px; }
+.timeline-step .ts-content .ts-title { font-weight: 600; color: var(--text-primary); font-size: 14px; }
+.timeline-step .ts-content .ts-desc { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+/* ===== 规则卡片 ===== */
+.rule-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-visible);
+  border-radius: var(--radius-sm); padding: 16px 20px; margin-bottom: 12px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.rule-card .rule-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.rule-card .rule-body h4 { font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
+.rule-card .rule-body p { font-size: 13px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav class="nav">
+  <a href="#intro">📋 概述</a>
+  <a href="#s1">① 原理流程</a>
+  <a href="#s2">② 核心难题</a>
+  <a href="#s3">③ 解决方案</a>
+  <a href="#s4">④ 优化方向</a>
+  <a href="#s5">⑤ 业务应用</a>
+  <a href="./index.html#project-excel-ppt-skill" style="color:var(--gold);border-bottom-color:var(--gold);" title="跳转到个人网站 → Excel→PPT Skill">📊 Excel→PPT Skill ↗</a>
+</nav>
+
+<div class="container">
+
+<!-- ===== Hero ===== -->
+<div class="hero" id="intro">
+  <div class="badge">🤖 AI + 数据运营 · 实操作品</div>
+  <h1>Excel → 数据分析 + PPT<br>全流程自动化 Skill 项目复盘</h1>
+  <p class="subtitle">从 54 万行原始数据到可交付的数据简报 + 汇报 PPT<br>——12 步流程 × 双 AI 协作 × 工程化落地，以及持续打磨的完整记录</p>
+  <p class="meta">Alex · 2026年7月 · 面试作品</p>
+</div>
+
+<!-- ===== 项目概况 ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">📋</span> 项目概况</div>
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>📥 输入</h3>
+      <p>一份 22.62 MB 的英国在线零售商 Excel（541,909 行 × 8 列），涵盖 2010-2011 年跨国交易明细——客户ID、国家、商品描述、数量、单价、日期等</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ 处理</h3>
+      <p>严格遵循 12 步流程（A1-A7 数据分析 + B1-B5+ PPT 构建），通过 Python 流式读取→数据质检→多维分析→matplotlib 图表→JSON 驱动 PPTX 引擎→SlideViber SVG 美化</p>
+    </div>
+    <div class="card">
+      <h3>📤 输出</h3>
+      <p>① 自包含 HTML 数据分析简报（ECharts 图表嵌入） ② python-pptx 原生可编辑 PPT（3 张图表） ③ SlideViber 演示级美化版 PPT ④ 一套可复用的 Skill 体系（12 步规范 + PPT 引擎 + 10 套主题）</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 一、原理和流程 ===== -->
+<div class="section" id="s1">
+  <div class="section-title"><span class="num">1</span> 原理和流程</div>
+  <p class="section-desc">用业务语言理解这个 Skill 的设计理念——类比：一条从"矿石"到"精炼品"的数据加工流水线</p>
+
+  <h3 style="margin-bottom:8px;font-size:18px;">这个 Skill 到底解决了什么问题？</h3>
+  <p style="color:var(--text-secondary);margin-bottom:24px;">
+    运营工作中有一个高频痛点：<span class="highlight">手里有数据，老板要 PPT</span>。从原始 Excel 到一份能拿得出手的汇报 PPT，中间有大量重复性劳动——读数据、洗数据、算指标、拆维度、做图表、写洞察、排版……每一步都要花时间，而且容易遗漏或出错。
+    <br><br>
+    这个 Skill 的本质是：<span class="highlight">把"数据分析→PPT 汇报"这条完整的知识工作流，固化为一套 AI 可执行的标准操作流程（SOP）</span>。12 个步骤环环相扣，每一步有明确的输入、输出和质量标准。AI 不再"凭感觉"做数据分析，而是像工厂流水线一样严谨执行。
+    <br><br>
+    类比一下：传统的做法像<span class="highlight">手工作坊</span>——每次接到任务，从头开始想怎么做，靠个人经验，质量不稳定。这个 Skill 像<span class="highlight">标准化生产线</span>——每个环节有 SOP、有质检、有工具链，换不同的人（甚至不同的 AI）执行，产出质量一致。
+  </p>
+
+  <h3 style="margin-bottom:12px;font-size:18px;">整体工作流程：A 段（数据分析 7 步）+ B 段（PPT 构建 5+1 步）</h3>
+
+  <!-- A段流程 -->
+  <div class="flow-section">
+    <h4>📊 A 段：数据分析（7 步）—— 从原始数据到洞察</h4>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="icon">📖</div>
+        <div class="label">A1 读取</div>
+        <div class="sub">流式解析+字段推断</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">🔍</div>
+        <div class="label">A2 质检</div>
+        <div class="sub">4类问题+处理方案</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">📐</div>
+        <div class="label">A3 核心指标</div>
+        <div class="sub">总销售/客单价/SKU</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">🔬</div>
+        <div class="label">A4 多维拆解</div>
+        <div class="sub">时间/地区/产品 Top N</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">📈</div>
+        <div class="label">A5 趋势异常</div>
+        <div class="sub">趋势方向+离群值</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">🎨</div>
+        <div class="label">A6 图表</div>
+        <div class="sub">2-4张PNG高DPI</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">📝</div>
+        <div class="label">A7 简报</div>
+        <div class="sub">HTML自包含单文件</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B段流程 -->
+  <div class="flow-section">
+    <h4>📑 B 段：PPT 构建（5+1 步）—— 从洞察到可交付 PPT</h4>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="icon">🗺️</div>
+        <div class="label">B1 字段映射</div>
+        <div class="sub">字段→业务问题→图表</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">🏗️</div>
+        <div class="label">B2 骨架</div>
+        <div class="sub">8-10页叙事序列</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">✅</div>
+        <div class="label">B3 图表审计</div>
+        <div class="sub">类型匹配+不合格替换</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">💬</div>
+        <div class="label">B4 业务语言</div>
+        <div class="sub">数据→判断+行动</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">📦</div>
+        <div class="label">B5 生成PPTX</div>
+        <div class="sub">JSON+图表→PPTX</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="icon">✨</div>
+        <div class="label">B5+ 美化</div>
+        <div class="sub">SlideViber SVG重绘</div>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>🔍 点击展开：每一步的详细解释</summary>
+    <div class="detail-content">
+      <p><strong>A1 读取与理解：</strong>使用 iterparse 流式读取超大 Excel（54 万行），避免内存溢出。输出每一列的业务含义映射表，标记不确定的字段。这一步解决了"拿到数据先乱做"的问题——先理解数据在说什么。</p>
+      <p><strong>A2 数据质检：</strong>检查四类问题——缺失值、重复、异常值（零/负/极端值）、时间字段。每项标注严重度（🔴/⚠️）和处理方案。这是最容易被跳过的步骤，但脏数据会污染所有后续分析。</p>
+      <p><strong>A3 核心指标：</strong>应用 A2 的清洗规则，计算总销售、订单数、客户数、客单价、SKU 数等。每个指标必须可复现，排除条件可追溯。</p>
+      <p><strong>A4 多维拆解：</strong>按时间/地区/产品三个维度拆解，Top N 排名 + per-unit 指标。每个维度必须有判断句——"量驱动还是价驱动？""集中还是分散？"</p>
+      <p><strong>A5 趋势与异常：</strong>月/周时序分析——趋势方向、季节性、离群值。扫描负销售、零价格、高退货率。每个异常必须解释业务含义。</p>
+      <p><strong>A6 图表生成：</strong>2-4 张 matplotlib 图（非 8 张！克制精选）。线图→时间序列，水平柱→排名，分组柱→比较。⚠️ figsize 必须匹配 B5 layout 容器宽高比。</p>
+      <p><strong>A7 执行摘要：</strong>自包含 HTML 文件，960px 居中，5 部分结构（核心结论/指标卡片/重点发现/建议动作/图表附录）。老板读完能做决定。</p>
+      <p><strong>B1 字段→问题映射：</strong>把技术字段翻译成业务问题。例如 Quantity+UnitPrice → "哪些产品贡献了最多收入？" → 条形图页面。</p>
+      <p><strong>B2 幻灯片骨架：</strong>8-10 页叙事序列，逻辑线：现状→结构→机会→打法。每页一个判断式标题，标题连读成一个完整故事。</p>
+      <p><strong>B3 图表审计：</strong>逐一审计：时间→折线，对比→柱状，排名→条形，占比→饼图（≤5 类）。不匹配则替换并给出理由。</p>
+      <p><strong>B4 业务语言翻译：</strong>最关键的一步——把数据翻译成业务判断。每页选择最适合内容的 layout（8 种可选），写 1-2 条"关键解读"（说所以呢）+ 可选"行动建议"（说然后呢）。连续页不得重复 layout。</p>
+      <p><strong>B5 PPTX 生成：</strong>存为 JSON 配置，选主题（10 套），运行 build_pptx.py。输出可编辑 .pptx，中文无乱码，图表嵌入无变形。</p>
+      <p><strong>B5+ SlideViber 美化：</strong>可选步骤。用 SVG 重绘幻灯片，21 套主题可选，浏览器实时预览，原生 PPTX 导出。但只美化不改内容。</p>
+    </div>
+  </details>
+
+  <h3 style="margin-top:32px;margin-bottom:12px;font-size:18px;">流程设计的核心巧思：A/B 两段分离 + 执行顺序铁律</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th></th><th>A 段：数据分析</th><th>B 段：PPT 构建</th></tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">核心问题</td>
+        <td>"数据在说什么？"</td>
+        <td>"怎么讲给老板听？"</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">语言</td>
+        <td>数据语言（数字、趋势、占比）</td>
+        <td>业务语言（判断、洞察、行动）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">输出物</td>
+        <td>HTML 简报（给分析师看）</td>
+        <td>PPTX 文件（给决策者看）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">关键约束</td>
+        <td>A6 figsize 必须等 B2 确定 layout 后再定</td>
+        <td>B5 交付后必须主动提醒 SlideViber</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">为什么分两段？</td>
+        <td colspan="2">A 段是"搞清楚数据在说什么"——纯分析思维。B 段是"把这个故事讲好"——纯汇报思维。两段分离保证了：① 分析不受 PPT 排版干扰 ② PPT 内容有分析根基 ③ 任何一步出问题只影响本段，不连锁崩溃。</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 二、核心难题 ===== -->
+<div class="section" id="s2">
+  <div class="section-title"><span class="num">2</span> 核心难题</div>
+  <p class="section-desc">从这个项目的第一版执行到最终打磨完成，遇到的 7 个关键问题和难点</p>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 1</span> 图表完全缺失——PPT 里只有表格，没有图表</h3>
+    <p>第一版 PPT 生成后，用户打开发现<strong>没有任何图表</strong>——所有分析维度都是纯文字表格。根因是：A6（matplotlib 生成图表 PNG）和 B5（图表嵌入 PPT）这两步被完全跳过。AI 直接从 A5 的文字分析跳到了 PPT 的文字排版。<strong>12 步流程中有两个关键步骤被"省略"了，但 AI 没有意识到这是致命的。</strong></p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 2</span> 图表拉伸变形——两次出现，两个根因</h3>
+    <p><strong>第一次（build_pptx.py 阶段）：</strong>matplotlib 默认 <code>figsize=(10,5)</code>（2:1），但 build_pptx.py 的 layout 容器宽高比各不相同（wide=2.88:1, insight-action=2.42:1, side=2.16:1）。2:1 的图塞进 2.88:1 的容器→横向拉伸 44%。</p>
+    <p style="margin-top:8px;"><strong>第二次（SlideViber 阶段）：</strong>修复 build_pptx.py 后，美化的 SVG 中 <code>&lt;image&gt;</code> 容器宽高比又不匹配了——SlideViber 的 PPTX 导出器不认 SVG 的 <code>preserveAspectRatio</code> 属性，强制按容器尺寸拉伸。同一个问题，不同的根因，修了两次。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 3</span> 输出格式错误——Markdown 而非 HTML</h3>
+    <p>用户明确要求"数据分析简报要生成 HTML 格式"。但第一版输出的是 Markdown 文件——没有图表嵌入、没有 KPI 卡片、没有专业排版。AI 默认选择了"最省事"的输出方式，而不是"最合适汇报"的方式。<strong>这是 AI 的一种惯性：能省则省，除非被明确约束。</strong></p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 4</span> 两个 AI 共享知识——Codex 和 Claude Code 各自维护规则</h3>
+    <p>这个 Skill 最初由 Codex 创建，Claude Code 协助落地执行和调试。但两边的 memory 各自维护——Codex 有 skill 定义，Claude Code 有执行 memory。同一个 12 步流程在两端以不同形式存在，信息重复且容易不一致。<strong>改了 A 端漏了 B 端 → 下次 B 端执行时读到旧规则 → 重复犯错。</strong></p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 5</span> SlideViber 内容篡改——美化≠重写</h3>
+    <p>第一次 SlideViber 美化后发现 6 个具体问题：文字溢出容器、缺少行动建议板块、洞察和行动混在一个块里、使用口语化标签（"所以呢""然后呢"而非"关键解读""行动建议"）、内容不完整（部分段落被省略）。<strong>AI 在"美化"的过程中忍不住"帮你改"——这是所有生成式 AI 的通病。</strong></p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 6</span> Memory 文件膨胀与重复</h3>
+    <p>同一个主题建了多个 memory 文件——大表哥文章处理建了 4 份（SOP / 清单 / 工作流 / 存档规则），12 步流程信息在 memory 和 SKILL.md 中重复出现。文件越多，调用效率越低；信息重复时改一处漏改另一处→调用时拿到矛盾信息。<strong>这是"每次遇到新问题就新建一个文件"的习惯导致的系统性债务。</strong></p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 7</span> Excel 太大——22MB 超出所有常规工具的处理上限</h3>
+    <p>54 万行 × 8 列的 Excel 文件，MinerU 无法处理（超出文件大小限制），Windows COM Excel 接口调用失败。最终只能安装 Python 3.12 + pandas + openpyxl 直接流式读取。这暴露了一个通用问题：<strong>AI 工具链对于"大文件"场景缺乏统一解决方案，需要根据实际情况灵活切换技术栈。</strong></p>
+  </div>
+</div>
+
+<!-- ===== 三、解决方案 ===== -->
+<div class="section" id="s3">
+  <div class="section-title"><span class="num">3</span> 解决方案</div>
+  <p class="section-desc">每个难题的对应方案，以及背后的设计思路——不只修 Bug，要修流程</p>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 1</span> 12 步流程铁律 + 交付前自检清单（治本之策）</h3>
+    <p><strong>对应难题 1 和 3。</strong>不是"提醒 AI 别忘了做图表"——而是建立两个机制：① <strong>12 步不可跳步</strong>：把每步的"输入→做什么→产出→质量标准"写成结构化表格，AI 执行时必须逐行走完。② <strong>交付前自检清单</strong>：HTML 简报 8 项 + PPT 8 项，逐项打勾后才能交付。其中 PPT 第 2 项就是"图表嵌入（非纯表格）"——这个检查项专门防止图表遗漏。</p>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table class="compare-table">
+        <tr><th></th><th>旧方案（无流程约束）</th><th>新方案（12 步 + 自检清单）</th></tr>
+        <tr class="before"><td>图表生成</td><td>AI 自己决定要不要做</td><td class="after">A6 强制步骤，有明确产出标准</td></tr>
+        <tr class="before"><td>图表嵌入</td><td>可能被跳过</td><td class="after">B5 必须嵌入，自检清单逐项验证</td></tr>
+        <tr class="before"><td>输出格式</td><td>AI 默认 Markdown</td><td class="after">A7 强制 HTML 自包含单文件</td></tr>
+        <tr class="before"><td>交付质量</td><td>凭感觉判断</td><td class="after">16 项自检清单全部通过才交付</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 2</span> figsize 速查表 + 执行顺序铁律（关键创新）</h3>
+    <p><strong>对应难题 2。</strong>图表拉伸的根因是<strong>顺序错误</strong>——先定 figsize 再选 layout。正确顺序是：B2 确定每页 layout → 查速查表 → A6 用匹配的 figsize 生成图表。为此建立了速查表：</p>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table>
+        <tr><th>Layout</th><th>容器 (inch)</th><th>宽高比</th><th>matplotlib figsize</th><th>SVG image 容器</th></tr>
+        <tr><td>wide</td><td>12.1 × 4.2</td><td>2.88 : 1</td><td>(11.52, 4.0)</td><td>width="1800" height="625"</td></tr>
+        <tr><td>insight-action</td><td>7.5 × 3.1</td><td>2.42 : 1</td><td>(9.68, 4.0)</td><td>width="1100" height="455"</td></tr>
+        <tr><td>side</td><td>8.0 × 3.7</td><td>2.16 : 1</td><td>(8.65, 4.0)</td><td>width="960" height="444"</td></tr>
+        <tr><td>minimal</td><td>11.3 × 4.5</td><td>2.51 : 1</td><td>(11.30, 4.5)</td><td>width="1130" height="450"</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:8px;">同时覆盖了 SlideViber 的图表容器问题：<strong>height = width / 比率</strong>（通用公式）。SlideViber 的 PPTX 导出器不认 SVG 的 preserveAspectRatio 属性，必须确保 <code>&lt;image&gt;</code> 的 width/height 比率精确等于图表 figsize 比率。</p>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 3</span> FRAMEWORK.md —— 两个 AI 的单一权威源（架构创新）</h3>
+    <p><strong>对应难题 4 和 6。</strong>核心洞察：<strong>不是"让两个 AI 互相通信"，而是"让两个 AI 读同一份文件"。</strong>建立了 <code>FRAMEWORK.md</code> 作为唯一共享权威源，包含：12 步表格（每步的"解决的问题"+"质量标准"）、流程依赖关系图、8 条关键规则、figsize 速查表、常见错误表、3 条行为规则。通过 Junction 目录同步，Codex 和 Claude Code 都能直接读写。</p>
+    <blockquote>
+      <strong>设计原则：</strong>所有通用规则（流程、行为约束、质量标准）直接写入 FRAMEWORK.md。仅当规则涉及某个平台特有的功能时才写入该平台的本地 memory。Claude Code 的 memory 从"内容副本"变成"指针"——指向 FRAMEWORK.md + 补充平台专属规则。
+    </blockquote>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 4</span> SlideViber 协作铁律——内容 vs 美化的明确边界</h3>
+    <p><strong>对应难题 5。</strong>制定了严格的协作铁律：build_pptx.py 产出的 PPT <strong>内容是权威（single source of truth）</strong>，SlideViber 只做视觉美化，不修改任何内容。列出了详细的"允许/禁止"清单——允许优化布局/配色/字体/间距/视觉层级，禁止修改标题/洞察/行动建议文字、禁止增删内容板块、禁止使用口语化标签。</p>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table>
+        <tr><th>职责</th><th>build_pptx.py</th><th>SlideViber</th></tr>
+        <tr><td>标题/洞察/行动文字</td><td>✅ 权威</td><td>❌ 不修改</td></tr>
+        <tr><td>数据/KPI 数字</td><td>✅ 权威</td><td>❌ 不修改</td></tr>
+        <tr><td>图表 PNG</td><td>✅ 权威</td><td>❌ 不重新生成</td></tr>
+        <tr><td>页面结构（板块/顺序）</td><td>✅ 权威</td><td>❌ 不增减</td></tr>
+        <tr><td>布局/配色/字体/间距</td><td>—</td><td>✅ 优化</td></tr>
+        <tr><td>视觉层级（卡片/阴影/图标）</td><td>—</td><td>✅ 增强</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 5</span> Memory 指针化 + 合并去重</h3>
+    <p><strong>对应难题 6。</strong>两条规则：① <strong>尽量少建文件，一个主题一个文件</strong>——能在已有文件里加一段解决的，绝不新建文件。② <strong>单一信息源</strong>——同一类信息只在一个文件中维护。大表哥文章处理 4 份文件合并为 1 份，12 步流程 memory 从内容副本改为指针（指向 FRAMEWORK.md）。每条 memory 都有"为什么"和"如何应用"字段，防止规则变成僵尸。</p>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 6</span> Python 替代方案 + 工具选择规则</h3>
+    <p><strong>对应难题 7。</strong>22MB Excel 超出 MinerU 限制 → 安装 Python 3.12 + openpyxl + pandas 直接流式读取。这件事还催生了另一个规则：<strong>接到任务先扫 MCP 工具，别惯性用 Read</strong>——比如用户提供截图时优先用 OCR 专用工具而非 Read 读取图片。</p>
+  </div>
+</div>
+
+<!-- ===== 四、优化方向 ===== -->
+<div class="section" id="s4">
+  <div class="section-title"><span class="num">4</span> 优化方向</div>
+  <p class="section-desc">基于当前方案，从四个维度看未来的优化空间——哪些可以做得更好？</p>
+
+  <!-- 4.1 流程方法论 -->
+  <h3 style="font-size:18px;margin-top:24px;margin-bottom:12px;">🔧 维度一：流程方法论优化</h3>
+
+  <div class="card">
+    <h3>📋 A7 简报 → B2 骨架：打通"分析结论→PPT 叙事"的自动映射</h3>
+    <p>当前 A7 简报的结论和 B2 的页面骨架之间是手工映射的——AI 读了 A7 的结论，再手动规划 B2 的 8-10 页结构。下一步可以让 AI 自动从 A7 的结构化结论中<strong>推导出 PPT 页面序列</strong>：核心结论→封面标题，重点发现→图表页，建议动作→行动页。减少人工翻译环节，提高一致性。</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 A6 图表智能推荐：根据数据特征自动选图类型 + layout</h3>
+    <p>当前 B3 图表审计是"事后检查"——先选了类型再审计是否合理。可以升级为<strong>事前推荐</strong>：AI 分析数据特征（趋势/对比/排名/占比），自动推荐最佳图表类型 + 对应 layout + figsize，人工只需确认而非从头选择。</p>
+  </div>
+
+  <div class="card">
+    <h3>🔄 多轮迭代模式：用户反馈→自动修正</h3>
+    <p>当前是"一次性生成→用户手动提修改"。可以改为<strong>对话式迭代</strong>：生成初版→用户说"第三页图表太大了"/"标题不够有力"→AI 只改那一页的 JSON 配置→重新生成。局部的改，不重跑全流程。</p>
+  </div>
+
+  <details>
+    <summary>💡 流程方法论层面的更多优化思路</summary>
+    <div class="detail-content">
+      <p><strong>1. 数据画像前置</strong>——在 A1 读取阶段就生成一份"数据画像"（行数/字段类型/缺失率/分布特征/建议关注维度），作为后续所有步骤的快速参考。AI 不需要每次都重新扫描整个数据集。</p>
+      <p><strong>2. 中间产物持久化</strong>——将 A3-A5 的中间分析结果存为结构化 JSON，B 段直接从 JSON 读取而非重新计算。好处：① 避免重复计算 ② 换人/换 AI 执行时可以直接接续 ③ 中间结果可审计。</p>
+      <p><strong>3. 模板库积累</strong>——每次做完一个项目，把 B4 的页面内容和 B5 的 JSON 配置保存为模板。下次遇到类似数据（如"电商月度报表"），直接加载模板+替换数据，从"每次从头做"变成"选模板再微调"。</p>
+    </div>
+  </details>
+
+  <!-- 4.2 双AI协作 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">🤝 维度二：双 AI 协作体系优化</h3>
+
+  <div class="card">
+    <h3>🔗 FRAMEWORK.md 版本控制：像 Git 一样追踪规则变更</h3>
+    <p>当前 FRAMEWORK.md 是最新版本，但<strong>没有变更历史</strong>——不知道某个规则是谁改的、什么时候改的、为什么改。下一步可以：每次修改 FRAMEWORK.md 时自动记录变更日志（日期/修改人/修改内容/原因），方便回溯和审计。当发现某条规则导致问题时，可以快速定位是哪个版本引入的。</p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 规则变更的回归测试</h3>
+    <p>选取 2-3 个"标准数据集"（如本次的 Online Retail），每次修改 FRAMEWORK.md 或 SKILL.md 后，自动用新规则重新跑一次完整 12 步流程，对比新旧输出的差异，确保"优化"没有引入新问题。类似软件工程中的回归测试，但测试对象是 AI 执行流程的质量。</p>
+  </div>
+
+  <div class="card">
+    <h3>🔄 Codex 和 Claude Code 的能力互补矩阵</h3>
+    <p>当前已知两个 AI 的能力差异（Codex 原生支持文档插件和 Goal 系统，Claude Code 有 Workflow 多 Agent 编排和 Playwright），但还没有系统化的"分工指南"——哪些步骤更适合 Codex 执行、哪些更适合 Claude Code 执行。建立能力互补矩阵后，可以把一个 12 步任务拆分给两个 AI 各自执行最擅长的部分。</p>
+  </div>
+
+  <!-- 4.3 质量保障 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">🛡️ 维度三：质量保障体系升级</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>📊 自动化自检脚本</h3>
+      <p>当前自检是 AI 手动对照清单打勾。可以开发一个 Python 脚本，自动验证：PPTX 中图表数量 ≥ 2、每张图片宽高比与对应 layout 匹配、HTML 中图表数据非空、中文编码无乱码等。机器检查不遗漏，AI 专注于需要判断力的项目。</p>
+    </div>
+    <div class="card">
+      <h3>🔬 图表拉伸自动检测</h3>
+      <p>在 build_pptx.py 中增加一个后处理步骤：读取 PPTX 中每张图片的实际宽高比，与 figsize 速查表中对应 layout 的预期宽高比对比，偏差超过 1% 则报警。把"人工目测"变成"机器自动检测"。</p>
+    </div>
+    <div class="card">
+      <h3>✅ B4 洞察质量评分</h3>
+      <p>用 LLM 自动评估每条"关键解读"的质量：是否在说"所以呢"（而非"如图"）、是否引用了具体数据、是否说明了业务意义。低于阈值的洞察自动标记为"需人工复核"。</p>
+    </div>
+  </div>
+
+  <!-- 4.4 技术架构 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">🏗️ 维度四：技术架构优化</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>📦 build_pptx.py 独立化</h3>
+      <p>当前 build_pptx.py 依赖 skill 环境运行。可以封装为独立的 pip 包 + CLI 工具，不依赖任何 AI——任何有 Python 环境的人都能用，JSON 驱动、10 套主题、零编码。让这个工具的受众从"AI 用户"扩展到"所有做 PPT 的人"。</p>
+    </div>
+    <div class="card">
+      <h3>🌐 Web 界面</h3>
+      <p>基于 build_pptx.py 的 JSON 配置开发一个 Web 编辑器——拖拽选择 layout、填写洞察文字、上传图表、实时预览。降低使用门槛，让不会编程的运营同事也能用。</p>
+    </div>
+    <div class="card">
+      <h3>📱 数据源扩展</h3>
+      <p>当前只支持 .xlsx 输入。可以扩展为支持 CSV / JSON / 数据库直连 / Google Sheets / 飞书多维表格——覆盖运营工作中实际会遇到的各类数据源。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、业务应用 ===== -->
+<div class="section" id="s5">
+  <div class="section-title"><span class="num">5</span> 业务应用</div>
+  <p class="section-desc">从 Online Retail 案例延伸到互联网运营工作——怎么把这套方法论应用到实际业务中？</p>
+
+  <blockquote>
+    <strong>核心迁移逻辑：</strong>"Excel→数据分析→PPT"这套 12 步流程，本质上是一套<strong>"从原始数据到决策汇报"的标准化生产线</strong>。把"Online Retail 交易数据"换成"运营活动数据/用户行为数据/竞品数据"，整个 pipeline 可以直接复用。价值不在于处理了这一次的 54 万行数据，而在于<strong>下次、下下次、任何数据分析+PPT 任务都有了可复用的流程和工具链</strong>。
+  </blockquote>
+
+  <!-- 场景1 -->
+  <div class="scenario-card">
+    <h3>📊 场景一：运营周报/月报自动化</h3>
+    <div class="who">👤 个人/团队层面 · 运营岗最高频需求</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">运营同学每周/每月都要写数据报告——从后台导出 CSV、Excel 里做透视表、截图贴到 PPT 或飞书文档。同样的流程重复 52 次/年，每次耗时 1-2 小时。<strong>这种高重复性的劳动完全应该被自动化——人只需要在最后做判断和润色，而不是每次都从零开始。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 方案</h4>
+    <div class="flow-mini">
+      <span class="step">📥 每周导出数据 CSV</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 自动跑 12 步流程</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📊 HTML 简报 + PPTX</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">👤 人审阅+补充洞察</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📤 发送团队/老板</span>
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <tr><th>环节</th><th>AI 做什么</th><th>人做什么</th></tr>
+        <tr><td>数据清洗</td><td>A2 自动四类质检，标注异常</td><td>确认/修正异常处理方案</td></tr>
+        <tr><td>指标计算</td><td>A3-A4 自动计算+排名+判断</td><td>补充业务背景（为什么涨/跌）</td></tr>
+        <tr><td>图表制作</td><td>A6 自动匹配图表类型+配色</td><td>调整重点标注、补充标注</td></tr>
+        <tr><td>洞察撰写</td><td>B4 自动生成"所以呢"判断</td><td>加入战略视角、删改不准确的</td></tr>
+        <tr><td>PPT 排版</td><td>B5 一键生成可编辑 PPTX</td><td>微调标题、补充附录</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>从"每次 1-2 小时手工做"变成"5 分钟审阅+微调"。人的时间花在"判断"和"洞察"上，而不是"拉数据"和"贴图表"。一年省下 50-100 小时。
+    </p>
+  </div>
+
+  <!-- 场景2 -->
+  <div class="scenario-card">
+    <h3>🧪 场景二：活动复盘→PPT 一键生成</h3>
+    <div class="who">👥 团队层面 · 增长/活动运营核心场景</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">每次大促/活动结束后都要做复盘 PPT——展示活动数据、对比往期、分析转化漏斗、提炼经验教训、规划下一步动作。数据散落在多个系统（活动后台/BI 看板/用户反馈），整理耗时，排版更耗时。<strong>活动周五结束，周一早上就要汇报，运营同学周末加班做 PPT 是常态。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 方案</h4>
+    <div class="flow-mini">
+      <span class="step">📥 活动数据多源导出</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 12 步流程</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📊 活动复盘 PPTX</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">✨ 可选 SlideViber 美化</span>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <tr><th>PPT 页面</th><th>内容</th><th>skill 中对应的步骤</th></tr>
+        <tr><td>封面 + 核心指标卡</td><td>活动总 GMV、参与人数、ROI、同比环比</td><td>A3 → B4 核心指标</td></tr>
+        <tr><td>转化漏斗页</td><td>曝光→点击→参与→转化各环节数据</td><td>A5 趋势分析 → A6 漏斗图</td></tr>
+        <tr><td>渠道拆解页</td><td>各渠道贡献占比、效率对比</td><td>A4 维度拆解 → A6 柱状图</td></tr>
+        <tr><td>用户分层页</td><td>新老用户表现、高价值用户行为</td><td>A4 维度拆解 → B4 洞察</td></tr>
+        <tr><td>经验教训 + 下一步</td><td>什么做得好/不好、下次怎么改</td><td>B4 narrative/actions 页面</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>活动数据周五下午导出，AI 周六上午生成初版 PPT，运营同学只需补充"人"才知道的信息（如某个渠道为什么表现差、竞品同时做了什么动作）。周末不用加班，周一早上直接汇报。
+    </p>
+  </div>
+
+  <!-- 场景3 -->
+  <div class="scenario-card">
+    <h3>🔍 场景三：竞品数据监控→自动简报</h3>
+    <div class="who">🔗 跨部门协作 · 产品运营/市场岗</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">以前做竞品追踪靠人手工收集——搜索竞品官网/财报/公众号/App Store → 截图→整理→写纪要→群发团队。因为太耗精力，团队无法坚持，竞品调研逐渐变成"凭感觉"。<strong>同样是流程设计问题——完全依赖人的意志力去维护一个高频重复任务。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 方案</h4>
+    <div class="flow-mini">
+      <span class="step">📥 竞品数据定期采集</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 12 步流程处理</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📊 竞品简报 HTML</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📤 自动推送团队</span>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>人从"找信息+整理+排版"变成只看最终简报。AI 做了 90% 的收集整理工作，人只做最后 10% 的判断——"这个竞品动作对我们意味着什么？我们要怎么应对？"
+    </p>
+  </div>
+
+  <!-- 更多场景 -->
+  <h3 style="font-size:18px;margin-top:40px;margin-bottom:16px;">🔮 更多可复用的业务场景</h3>
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>👥 用户反馈→产品需求</h3>
+      <p>App Store 评论 + 客服对话 + 社群聊天 → 定期蒸馏为结构化洞察 → 自动生成 HTML 简报供产品团队评审。用户反馈从"偶尔看看"变成"系统性输入"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：有 C 端产品的团队</p>
+    </div>
+    <div class="card">
+      <h3>📈 渠道效果对比报告</h3>
+      <p>各投放渠道数据导出 → 自动生成渠道效率对比 PPT（CPA/ROI/转化率排名 + 趋势 + 建议预算调整）。投手不再花时间做表，专注于优化策略。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：有投放/增长的团队</p>
+    </div>
+    <div class="card">
+      <h3>🎯 季度业务复盘</h3>
+      <p>季度结束时，从 BI 导出核心数据 → AI 自动生成完整的季度复盘 PPT（现状→趋势→亮点→问题→下季度策略）。从"花 2 天做复盘 PPT"变成"花 2 小时审阅+补充"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：所有业务线负责人</p>
+    </div>
+    <div class="card">
+      <h3>📝 A/B 测试报告自动生成</h3>
+      <p>实验平台导出数据 → 自动计算置信度、效应量 → 生成结构化实验报告（假设/设计/结果/建议）。历史实验可检索、可对比，避免"同样的实验不同的人做两遍"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：有实验平台的增长团队</p>
+    </div>
+    <div class="card">
+      <h3>🏪 电商商品分析</h3>
+      <p>店铺后台导出商品销售数据 → 自动生成商品结构分析（爆款/利润款/长尾款）+ 库存预警 + 选品建议。运营不再手工做透视表。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：电商运营</p>
+    </div>
+    <div class="card">
+      <h3>📋 新人入职数据包</h3>
+      <p>团队历史数据报告 → AI 自动生成"新人入职数据概览"HTML——一张页面了解团队核心指标、历史趋势、关键项目。新人入职第一天就能看懂业务全貌。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：所有团队</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 项目核心数字 ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">📊</span> 项目核心数字</div>
+
+  <div class="card-grid-3">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--cyan);">541,909</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">原始数据行数</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--blue);">12 步</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">标准化流程（A7 + B5+）</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--purple);">8 种</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">PPT Layout 类型</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--green);">10 套</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">PPT 内置主题</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--gold);">7 个</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">关键难题 → 全部解决</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--red);">2 个 AI</div>
+      <div style="color:var(--text-secondary);margin-top:4px;">Codex + Claude Code 协作</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 核心收获 ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">✨</span> 核心收获</div>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>💡 方法论</h3>
+      <p><strong>AI 执行复杂任务，关键不在于 AI 有多聪明，而在于流程设计有多严谨。</strong>12 步流程、figsize 速查表、交付前自检清单——这些都是"防呆设计"，把 AI 容易遗漏、容易犯错的地方用结构化规则堵住。流程设计能力比 prompt 技巧重要得多。</p>
+    </div>
+    <div class="card">
+      <h3>🛠️ 工程化</h3>
+      <p>把一次性的"帮我看数据做 PPT"变成可复用的 Skill 体系——<strong>FRAMEWORK.md 是大脑（流程规范），SKILL.md 是手册（执行细节），build_pptx.py 是工具（代码引擎），memory 是备忘录（经验教训）</strong>。四个组件互相配合，缺一不可。</p>
+    </div>
+    <div class="card">
+      <h3>🚀 可迁移性</h3>
+      <p>这套方法论的核心模式——<strong>"输入→清洗→分析→可视化→洞察→输出"</strong>——不只适用于 Excel→PPT。任何"从非结构化信息中提炼可呈现的洞察"的场景（竞品追踪、用户反馈、实验复盘、渠道分析），换内容源即可复用，流程不变。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3>🎓 对 AI 工具的本质理解</h3>
+    <p style="color:var(--text-secondary);">这次项目让我深刻体会到：<strong>AI 不是"帮你省掉思考"的工具，而是"帮你的思考聚焦在真正需要人的判断的地方"的工具</strong>。AI 擅长的是：按规则执行重复操作、生成结构化输出、不遗漏检查项。人擅长的（而且应该聚焦的）是：判断数据背后的业务含义、做出策略性决策、理解老板真正的关切。好的协作不是"人告诉 AI 怎么做"，而是<strong>"人设计流程让 AI 可靠执行，人聚焦在 AI 做不到的判断上"</strong>。</p>
+  </div>
+</div>
+
+<!-- ===== 关联链接 ===== -->
+<div style="text-align:center;margin-top:48px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+  <a href="./online-retail-report.html" style="
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(135deg,rgba(57,210,192,0.12),rgba(88,166,255,0.12));
+    border:1px solid var(--border-visible);border-radius:var(--radius);
+    padding:16px 28px;text-decoration:none;color:var(--text-primary);
+    font-size:14px;font-weight:600;transition:var(--transition);
+  " onmouseover="this.style.borderColor='var(--cyan)';this.style.transform='translateY(-2px)';"
+     onmouseout="this.style.borderColor='var(--border-visible)';this.style.transform='translateY(0)';">
+    <span style="font-size:24px;">📊</span>
+    <span>查看<strong style="color:var(--cyan);">数据分析简报</strong> — 项目产出物<br><small style="color:var(--text-muted);font-weight:400;">Online Retail 自包含 HTML 简报（含 ECharts 图表）</small></span>
+    <span style="color:var(--cyan);font-size:16px;">↗</span>
+  </a>
+
+  <a href="./online-retail-slides.pptx" style="
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(135deg,rgba(163,113,247,0.12),rgba(227,179,65,0.12));
+    border:1px solid var(--border-visible);border-radius:var(--radius);
+    padding:16px 28px;text-decoration:none;color:var(--text-primary);
+    font-size:14px;font-weight:600;transition:var(--transition);
+  " onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-2px)';"
+     onmouseout="this.style.borderColor='var(--border-visible)';this.style.transform='translateY(0)';">
+    <span style="font-size:24px;">✨</span>
+    <span>查看<strong style="color:var(--purple);">SlideViber 美化版 PPT</strong> — 演示级交付物<br><small style="color:var(--text-muted);font-weight:400;">professional 主题 · SVG 重绘 · 8 页完整汇报</small></span>
+    <span style="color:var(--purple);font-size:16px;">↗</span>
+  </a>
+</div>
+
+<!-- ===== 回链：个人网站 ===== -->
+<div style="text-align:center;margin-top:48px;">
+  <a href="./index.html#project-excel-ppt-skill" style="
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(135deg,rgba(163,113,247,0.15),rgba(88,166,255,0.15));
+    border:1px solid var(--border-visible);border-radius:var(--radius);
+    padding:18px 32px;text-decoration:none;color:var(--text-primary);
+    font-size:15px;font-weight:600;transition:var(--transition);
+  " onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-2px)';"
+     onmouseout="this.style.borderColor='var(--border-visible)';this.style.transform='translateY(0)';">
+    <span style="font-size:28px;">📊</span>
+    <span>查看<strong style="color:var(--purple);">个人网站 AI 作品集</strong> — Excel→PPT Skill 条目<br><small style="color:var(--text-muted);font-weight:400;">跳转到个人网站，自动定位到对应作品卡片</small></span>
+    <span style="color:var(--purple);font-size:18px;">↗</span>
+  </a>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <p>Alex · Excel → 数据分析 + PPT Skill 项目复盘报告 · 2026年7月</p>
+  <p style="margin-top:4px;">AI 不会替代运营，但会用 AI 的运营会替代不会用的</p>
+</div>
+
+</div>
+</body>
+</html>

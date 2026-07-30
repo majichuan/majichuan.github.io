@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投资知识库蒸馏复盘 — Alex 面试作品</title>
+<style>
+/* ===== 暗色主题设计系统 ===== */
+:root {
+  --bg-deep: #0d1117;
+  --bg-card: #161b22;
+  --bg-elevated: #1c2333;
+  --border: #2a3346;
+  --border-visible: #3a4560;
+  --text-primary: #e6edf3;
+  --text-secondary: #a4b4c4;
+  --text-muted: #6e7a8a;
+  --cyan: #39d2c0;
+  --cyan-dim: #2ba899;
+  --blue: #58a6ff;
+  --blue-dim: #3d7ec9;
+  --purple: #a371f7;
+  --purple-dim: #7c4ec4;
+  --gold: #e3b341;
+  --red: #f85149;
+  --green: #3fb950;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.25s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.72;
+  font-size: 15px;
+}
+
+/* ===== 导航 ===== */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav a {
+  color: var(--text-secondary); text-decoration: none;
+  padding: 12px 16px; font-size: 13px; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: var(--transition);
+}
+.nav a:hover, .nav a.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* ===== 主容器 ===== */
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ===== Hero ===== */
+.hero {
+  text-align: center; padding: 60px 0 48px;
+  border-bottom: 1px solid var(--border); margin-bottom: 48px;
+}
+.hero .badge {
+  display: inline-block; background: rgba(57,210,192,0.12); color: var(--cyan);
+  padding: 4px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 20px;
+  border: 1px solid rgba(57,210,192,0.25);
+}
+.hero h1 {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle { color: var(--text-secondary); font-size: 16px; margin-top: 12px; }
+.hero .meta { color: var(--text-muted); font-size: 13px; margin-top: 8px; }
+
+/* ===== 章节 ===== */
+.section { margin-bottom: 56px; }
+.section-title {
+  font-size: 24px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+}
+.section-title .num {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #000; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; font-size: 16px; font-weight: 800; flex-shrink: 0;
+}
+.section-desc { color: var(--text-secondary); margin-bottom: 28px; font-size: 14px; }
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  transition: var(--transition);
+}
+.card:hover { border-color: var(--border-visible); }
+.card h3 { font-size: 17px; margin-bottom: 8px; color: var(--text-primary); }
+.card p { color: var(--text-secondary); font-size: 14px; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.card-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+/* ===== 问题/方案卡片 ===== */
+.problem-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--red);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+}
+.solution-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+}
+.problem-card h3, .solution-card h3 { font-size: 16px; margin-bottom: 6px; }
+.problem-card p, .solution-card p { color: var(--text-secondary); font-size: 14px; }
+
+/* ===== 流程图 ===== */
+.flow {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 8px; margin: 32px 0; font-size: 13px;
+}
+.flow-node {
+  background: var(--bg-elevated); border: 1px solid var(--border-visible);
+  border-radius: var(--radius-sm); padding: 14px 18px; text-align: center;
+  min-width: 110px; transition: var(--transition);
+}
+.flow-node:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.flow-node .icon { font-size: 24px; margin-bottom: 4px; }
+.flow-node .label { color: var(--text-primary); font-weight: 600; }
+.flow-node .sub { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+.flow-arrow { color: var(--cyan); font-size: 20px; font-weight: 700; }
+
+/* ===== 表格 ===== */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table {
+  width: 100%; border-collapse: collapse; font-size: 14px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--bg-elevated); color: var(--cyan); font-weight: 600; font-size: 13px; }
+td { color: var(--text-secondary); }
+tr:last-child td { border-bottom: none; }
+
+/* ===== 可折叠 ===== */
+details {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); margin: 12px 0; overflow: hidden;
+}
+summary {
+  padding: 14px 20px; cursor: pointer; font-weight: 600; font-size: 14px;
+  color: var(--blue); user-select: none; display: flex; align-items: center; gap: 8px;
+}
+summary::before { content: '▸'; font-size: 10px; transition: var(--transition); display: inline-block; }
+details[open] summary::before { transform: rotate(90deg); }
+details .detail-content { padding: 0 20px 20px; color: var(--text-secondary); font-size: 14px; }
+details .detail-content p { margin-bottom: 12px; }
+
+/* ===== 标签 ===== */
+.tag {
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px;
+  font-weight: 600;
+}
+.tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-cyan { background: rgba(57,210,192,0.15); color: var(--cyan); }
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
+.tag-purple { background: rgba(163,113,247,0.15); color: var(--purple); }
+
+/* ===== 引用块 ===== */
+blockquote {
+  border-left: 3px solid var(--cyan);
+  background: rgba(57,210,192,0.06);
+  padding: 14px 20px; margin: 16px 0; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary); font-size: 14px;
+}
+
+/* ===== 高亮 ===== */
+.highlight { color: var(--cyan); font-weight: 600; }
+.warn { color: var(--gold); font-weight: 600; }
+
+/* ===== 场景卡片（业务应用） ===== */
+.scenario-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-visible);
+  border-radius: var(--radius); padding: 28px; margin-bottom: 24px;
+  border-top: 3px solid var(--cyan);
+}
+.scenario-card:nth-child(2) { border-top-color: var(--blue); }
+.scenario-card:nth-child(3) { border-top-color: var(--purple); }
+.scenario-card h3 { font-size: 20px; margin-bottom: 6px; }
+.scenario-card .who { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
+.scenario-card .flow-mini {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin: 16px 0; font-size: 13px;
+}
+.flow-mini .step {
+  background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.3);
+  padding: 8px 14px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ===== 底部 ===== */
+.footer {
+  text-align: center; padding: 40px 0; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 13px; margin-top: 48px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 26px; }
+  .section-title { font-size: 20px; }
+  .flow { gap: 4px; }
+  .flow-node { min-width: 80px; padding: 10px 12px; font-size: 12px; }
+  .flow-arrow { font-size: 16px; }
+  .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ===== 对比表高亮 ===== */
+.compare-table td:first-child { color: var(--text-primary); font-weight: 500; }
+.compare-table .before { background: rgba(248,81,73,0.08); }
+.compare-table .after { background: rgba(63,185,80,0.08); }
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav class="nav">
+  <a href="#intro">📋 概述</a>
+  <a href="#s1">① 原理流程</a>
+  <a href="#s2">② 核心难题</a>
+  <a href="#s3">③ 解决方案</a>
+  <a href="#s4">④ 优化方向</a>
+  <a href="#s5">⑤ 业务应用</a>
+  <a href="./index.html#project-investment-advisor" style="color:var(--gold);border-bottom-color:var(--gold);" title="跳转到个人网站 → 投资顾问智能体">🤖 投资顾问智能体 ↗</a>
+</nav>
+
+<div class="container">
+
+<!-- ===== Hero ===== -->
+<div class="hero" id="intro">
+  <div class="badge">🏗️ AI + 知识管理 · 实操作品</div>
+  <h1>投资知识库蒸馏复盘报告</h1>
+  <p class="subtitle">从 127 篇公众号文章到结构化投资决策系统<br>——原理、难点、方案、优化与业务延伸</p>
+  <p class="meta">Alex · 2026年7月 · 面试作品</p>
+</div>
+
+<!-- ===== 项目概况 ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">📋</span> 项目概况</div>
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>📥 输入</h3>
+      <p>127 篇公众号文章（含实盘截图 + 社群聊天记录），覆盖投资策略、估值分析、交易实操、心态修炼等</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ 处理</h3>
+      <p>AI 子代理隔离模式逐篇提取→两段式存档（结构化蒸馏 + 100% 原文还原）→五步自审→蒸馏到知识库</p>
+    </div>
+    <div class="card">
+      <h3>📤 输出</h3>
+      <p>统一知识库（250+ 条结构化知识条目）+ 投资博主风格智能体 + 31 GB 完整原文存档（含所有图片 + 群聊OCR）</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 一、原理和流程 ===== -->
+<div class="section" id="s1">
+  <div class="section-title"><span class="num">1</span> 原理和流程</div>
+  <p class="section-desc">用业务语言理解"知识蒸馏"——类比：从矿石中提炼纯金属</p>
+
+  <h3 style="margin-bottom:8px;font-size:18px;">什么是对 AI 的知识蒸馏？</h3>
+  <p style="color:var(--text-secondary);margin-bottom:24px;">
+    知识蒸馏，简单理解就是：<span class="highlight">从大量原始信息中，提取出最核心、最有价值的知识，并结构化地存储起来</span>，方便以后快速检索和使用。
+    <br><br>
+    类比一下：原始文章就像<span class="highlight">矿石</span>——有价值，但夹杂大量无用物质；
+    蒸馏后的知识库就像<span class="highlight">提纯后的金属</span>——纯度高、可直接使用、价值密度极大。
+    <br><br>
+    我们的蒸馏不是简单"摘要"，而是：<span class="highlight">保留 100% 原文（永不丢失原始信息）+ 并行产出结构化提炼（快速查阅）</span>——既要原汤原味，也要精华浓缩。
+  </p>
+
+  <h3 style="margin-bottom:8px;font-size:18px;">整体工作流程</h3>
+
+  <!-- CSS流程图 -->
+  <div class="flow">
+    <div class="flow-node">
+      <div class="icon">📄</div>
+      <div class="label">公众号文章</div>
+      <div class="sub">127篇 + 图片</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">🤖</div>
+      <div class="label">子代理提取</div>
+      <div class="sub">Playwright + OCR</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">📦</div>
+      <div class="label">两段式存档</div>
+      <div class="sub">Part1 + Part2</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">🔍</div>
+      <div class="label">五步自审</div>
+      <div class="sub">子代理自查</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">🧠</div>
+      <div class="label">蒸馏到知识库</div>
+      <div class="sub">主代理质检+写入</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">🎯</div>
+      <div class="label">知识应用</div>
+      <div class="sub">检索+智能体问答</div>
+    </div>
+  </div>
+
+  <details>
+    <summary>🔍 点击展开：每一步的详细解释</summary>
+    <div class="detail-content">
+      <p><strong>第 1 步：提取原文</strong>——子代理用 Playwright 自动化浏览器打开微信文章链接，滚动加载全部图片，提取完整图文内容。群聊截图用 GLM OCR 光学识别。</p>
+      <p><strong>第 2 步：两段式存档</strong>——Part 1（结构化蒸馏）：六大要素提炼（核心论点、结构化框架、关键数据、决策逻辑链、金句≥3条、实操启示），排版参考标杆文章 040，使用表格、emoji 子标题等组织信息。Part 2（100% 原文还原）：通过 PowerShell 管道拼接，不对原文做任何一个字的删改。原文任何一个字都不动，只加排版标记和图片标注。</p>
+      <p><strong>第 3 步：五步自审</strong>——标题一致性、Part 1 六项清单、Part 2 正文清洗后长度对比（误差 &lt; 1%）、结构完整度、图片+群聊对账——五步全过才算合格。</p>
+      <p><strong>第 4 步：蒸馏到知识库</strong>——主代理质检通过后，从 Part 2 原文提取核心知识，写入统一知识库文件。同一主题有更深入观点时覆盖旧内容，保持知识库始终是最新版本。</p>
+      <p><strong>第 5 步：知识应用</strong>——日常随时检索知识库获取投资决策参考；智能体可切换"投资博主"口吻回答投资问题，相当于作者本人的 AI 分身。</p>
+    </div>
+  </details>
+
+  <h3 style="margin-top:32px;margin-bottom:12px;font-size:18px;">两段式存档：这个设计的核心巧思</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th></th><th>Part 1：结构化蒸馏</th><th>Part 2：100% 原文还原</th></tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">作用</td>
+        <td>快速浏览，一眼知道文章讲什么</td>
+        <td>阅读 100% 作者原文，永不失真</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">类比</td>
+        <td>药品说明书（快速了解功效）</td>
+        <td>完整病历（保留全部原始信息）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">关键要求</td>
+        <td>六项清单缺一不可、结构化呈现</td>
+        <td>逐字还原，误差 &lt; 1%</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text-primary);font-weight:500;">为什么都要？</td>
+        <td colspan="2">Part 1 负责"快"——50 篇文章扫一眼就能定位到要找的那篇；Part 2 负责"准"——任何时候回到原文，任何一个字都没被 AI 动过。两段互补，缺一不可。</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 二、核心难题 ===== -->
+<div class="section" id="s2">
+  <div class="section-title"><span class="num">2</span> 核心难题</div>
+  <p class="section-desc">做知识库蒸馏的过程中，遇到的 5 个关键问题和难点</p>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 1</span> 上下文窗口膨胀 → 后半段质量衰减</h3>
+    <p>每处理一篇文章，对话上下文就多几千字。处理 5 篇后，AI 的"记忆"开始模糊——后半段文章的 Part 1 被压缩成 1-2 句话、Part 2 被 AI 不自觉改写、蒸馏步骤被跳过。这是整个项目最核心的矛盾：<strong>质量 vs 批量</strong>。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 2</span> Part 2 原文被 AI "润色"</h3>
+    <p>AI 有一种极强的惯性——忍不住"帮你改"。把口语改成书面语、把啰嗦内容精简、把"不重要的"段落跳过去。而我们要求的是 <strong>100% 逐字还原</strong>，这恰恰是 AI 最难做到的——它对原文的"帮助性润色"在我们这里是致命缺陷。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 3</span> 群聊 OCR 发言人混乱</h3>
+    <p>文章末尾经常附带社群聊天截图。OCR 识别出的昵称千奇百怪——"娜娜简报"、"曙光"、"瑞&绣"、"Tommy 黄"……文字堆在一起，完全分不清哪些话是投资博主（作者）说的，哪些是普通群友说的。而恰恰投资博主在群聊里的发言是最有价值的内容。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 4</span> 质量自欺——036 号文章教训</h3>
+    <p>第 036 篇文章在自审时显示"通过"，但后来发现 Part 2 被截短到 1300 字（原文 2600+ 字）。原因：之前的自审只看尾部关键词"全文完"对上了，没有做长度对比。<strong>只看首尾，中间丢了一半也发现不了</strong>。</p>
+  </div>
+
+  <div class="problem-card">
+    <h3><span class="tag tag-red">难题 5</span> 技术细节坑——编码、文件名、工具</h3>
+    <p>PowerShell 5.1 的 UTF-8 编码陷阱导致中文乱码、Windows 文件名禁用字符处理（半角冒号/问号→全角）、Playwright 懒加载图片需特殊处理、OCR 工具选型等——这些细节单独看都不大，但叠加起来足以让一篇存档失败。</p>
+  </div>
+</div>
+
+<!-- ===== 三、解决方案 ===== -->
+<div class="section" id="s3">
+  <div class="section-title"><span class="num">3</span> 解决方案</div>
+  <p class="section-desc">每个难题的对应方案，以及背后的设计思路</p>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 1</span> 子代理隔离模式（核心创新 · 治本之策）</h3>
+    <p><strong>对应难题 1。</strong>每篇文章启动一个独立 AI 子代理处理，自带干净上下文——就像给每篇文章分配一个"专属编辑"，他不会看到前面 50 篇的内容，所以不会因为"记太多"而偷工减料。主代理只做调度、质检和蒸馏，<strong>执行和质检分离，监督制衡</strong>。</p>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table class="compare-table">
+        <tr><th></th><th>旧方案（不用子代理）</th><th>新方案（子代理隔离）</th></tr>
+        <tr class="before"><td>单篇上下文消耗</td><td>~6000 字叠加上下文</td><td class="after">~500 字结果返回</td></tr>
+        <tr class="before"><td>第 10 篇 Part 1</td><td>被压缩成 1-2 句话</td><td class="after">六项清单齐全</td></tr>
+        <tr class="before"><td>第 10 篇 Part 2</td><td>被改写/截短</td><td class="after">100% 逐字还原</td></tr>
+        <tr class="before"><td>蒸馏</td><td>后半段被跳过</td><td class="after">每篇完整蒸馏</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 2</span> 正文清洗后长度对比——不可伪造的硬防线</h3>
+    <p><strong>对应难题 2 和 4。</strong>Part 2 存档完成后，用 PowerShell 做"正文清洗后长度对比"：先剔除 OCR 文本块、图片标记、章节标题等 SOP 合法添加内容，只对比文章正文部分。误差 &lt; 1% 才算通过。<strong>这是唯一无法被 AI 自我欺骗的硬指标</strong>——数据不会说"我觉得差不多了"。</p>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 3</span> 头像识别 → 统一昵称归类</h3>
+    <p><strong>对应难题 3。</strong>投资博主头像固定不变，OCR 时先识别头像特征：是投资博主头像 → 统一命名"投资博主"；其他所有头像（含已打码的）→ 统一命名"会员"。所有 OCR 输出格式统一为"时间 | 投资博主/会员：内容"。这个看似简单的规则，解决了群聊信息结构化的核心问题。</p>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 4</span> 五步自审 + Tracking 防跳步</h3>
+    <p><strong>对应难题 4。</strong>子代理存档完成后必须完成五步自审：标题一致性、Part 1 六项清单、Part 2 清洗后长度对比、结构完整度、图片+群聊对账。五步全过才算合格。同时维护 <code>tracking.md</code> 进度追踪文件，每篇每个环节一列，全部 ✅ 才能启动下一篇——防跳步 + 断点续传 + 进度透明。</p>
+  </div>
+
+  <div class="solution-card">
+    <h3><span class="tag tag-green">方案 5</span> 技术规范化 + SOP 持续迭代</h3>
+    <p><strong>对应难题 5。</strong>所有 PowerShell 命令统一使用 <code>-Encoding UTF8</code> 参数、文件名处理规则固化到 SOP、图片并行下载优化、SOP 指令外置到独立文件节省上下文。SOP 本身也是活文档——每发现一个新坑，立即更新规则，防止再犯。</p>
+  </div>
+</div>
+
+<!-- ===== 四、优化方向 ===== -->
+<div class="section" id="s4">
+  <div class="section-title"><span class="num">4</span> 优化方向</div>
+  <p class="section-desc">基于当前方案，从四个维度看未来的优化空间——哪些可以做得更好？</p>
+
+  <!-- 4.1 流程方法论 -->
+  <h3 style="font-size:18px;margin-top:24px;margin-bottom:12px;">🔧 维度一：流程方法论优化</h3>
+
+  <div class="card">
+    <h3>📋 SOP 指令外置 + 预建模板</h3>
+    <p><strong>已完成。</strong>将原本每次嵌入子代理启动指令的 3000 字完整 SOP，独立存储为 F 盘文件。子代理启动后自读，主代理只需传 ~300 字文章信息。单篇主会话消耗从 ~6000 字压到 ~2800 字。<strong>核心洞察：把"重复传输的静态知识"变成"一次存储、多次引用"，是 AI 工作流提效的通用模式。</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 批次启动前置步骤：预建 Part 1 骨架模板</h3>
+    <p><strong>已完成。</strong>每批开始前，先花 5-10 分钟基于文章标题预判主题类型，预建该批次所有 Part 1 骨架模板（六项清单结构 + 主题方向提示）。子代理拿到模板后做"增强填充"而非"从零创作"——有模板比无模板平均快 ~25%，且质量更稳定（模板保证了六项清单不遗漏）。</p>
+  </div>
+
+  <div class="card">
+    <h3>🔄 串行铁律 + 不设批次数上限</h3>
+    <p><strong>已优化。</strong>一篇未走完全流程绝不碰下一篇，保证质量一致性。但不设批次数上限——用户指定 32 篇就一路跑到头，中间不主动暂停。唯一停止条件是上下文即将耗尽时主动提示 compact。在质量和效率之间找到平衡点。</p>
+  </div>
+
+  <details>
+    <summary>💡 流程方法论层面的进阶优化方向（未来可做）</summary>
+    <div class="detail-content">
+      <p><strong>1. 质量指标可视化仪表盘</strong>——将 tracking.md 升级为实时仪表盘：Part 2 长度误差趋势图、每篇处理耗时分布、常见自审失败类型统计。团队协作时可以一眼看到当前蒸馏质量是否在安全线内。</p>
+      <p><strong>2. 异常自动回滚机制</strong>——当某篇自审连续 3 次不通过时，自动标记为"需人工介入"，暂停该篇并继续下一篇，避免卡住整个 pipeline。事后统一排查异常文章。</p>
+      <p><strong>3. 多轮蒸馏</strong>——当前是"一篇文章→一条知识"，未来可以"多篇同主题文章→交叉蒸馏→产出专题知识卡片"。比如把 5 篇关于网格交易的文章一起蒸馏，产出更系统、更深入的网格交易专题知识。</p>
+      <p><strong>4. 反馈闭环</strong>——用户实际使用知识库检索时，记录"这条知识被查了几次？查完后用户做了什么决策？结果如何？"——用实际使用数据反向优化蒸馏策略（哪些类型的知识更有用，就强化哪些类型的提取）。</p>
+    </div>
+  </details>
+
+  <!-- 4.2 知识库内容 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">📚 维度二：知识库内容层面优化</h3>
+
+  <div class="card">
+    <h3>🔗 知识图谱化：从线性列表到关联网络</h3>
+    <p>当前知识库是线性列表结构——250+ 条知识按投喂顺序排列。下一步可以引入<strong>知识图谱</strong>：把"投资博主的投资体系"拆解为节点（如"定投策略""网格交易""止盈逻辑""估值判断""心态管理"），每个节点关联相关文章和金句。<strong>价值：不是"我搜到什么看什么"，而是"看到一条知识时，相关的前置知识和延伸知识自动推荐"。</strong></p>
+    <p style="margin-top:8px;color:var(--text-muted);font-size:13px;">
+      实现思路：给每条知识打标签（主题、难度、前置知识ID、关联知识ID）→ AI 自动建立交叉引用 → 前端用力导向图可视化展示知识关联网络。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>⏰ 时效性管理：知识也有"保质期"</h3>
+    <p>投资知识有时效性——2025 年的估值数据放到 2026 年可能已过时。当前知识库没有时效标记。下一步可以：每条知识标注"信息来源日期"和"预计有效期"，设置定期复核提醒。当新的市场数据出现时，AI 自动检测是否需要更新旧知识。</p>
+  </div>
+
+  <div class="card">
+    <h3>🔀 多源数据融合：不只一个作者</h3>
+    <p>当前只蒸馏投资博主一个人的内容。未来可以扩展为多信息源交叉验证——比如同时追踪 3-5 个纳指投资 KOL，当多个来源在某观点上一致/矛盾时，自动标注"共识度：高/低/争议"。这让知识库从"一个人的视角"升级为"多角度的立体认知"。</p>
+  </div>
+
+  <details>
+    <summary>💡 知识库内容层面的更多优化思路</summary>
+    <div class="detail-content">
+      <p><strong>1. 分层知识体系</strong>——将知识分为 L1（基础概念）、L2（策略框架）、L3（实操技巧）、L4（心法/哲学），不同层级的读者（小白 vs 老手）自动获得不同深度的知识推荐。</p>
+      <p><strong>2. 知识版本控制</strong>——像 Git 一样追踪每条知识的修改历史：谁改的、什么时候改的、为什么改。防止重要知识在迭代中被覆盖丢失。</p>
+      <p><strong>3. 案例库独立化</strong>——将"实盘操作案例"从知识库中独立出来，建立结构化的案例库（日期/市场环境/操作/结果/复盘），方便按日期或操作类型检索。</p>
+      <p><strong>4. 自动化 FAQ 生成</strong>——定期扫描群聊 OCR 中重复出现的问题，自动生成 FAQ 条目并关联到知识库中的答案。问题发现自下而上（从用户真实困惑中来），而非自上而下（从作者认为重要的来）。</p>
+    </div>
+  </details>
+
+  <!-- 4.3 技术架构 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">🏗️ 维度三：技术架构优化</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>⏱️ 自动化定时 Pipeline</h3>
+      <p>当前是手动触发。未来可以设置定时任务：每天/每周自动检查 Excel 是否有新文章 → 自动触发子代理处理 → 自动蒸馏 → 自动推送更新摘要。</p>
+    </div>
+    <div class="card">
+      <h3>🔔 智能推送</h3>
+      <p>蒸馏完成后，AI 自动判断"这篇是否有决策价值"——如果有（如市场拐点信号），自动推送到手机/飞书/企业微信；如果只是常规内容，静默归档。</p>
+    </div>
+    <div class="card">
+      <h3>📱 多终端输出</h3>
+      <p>知识库同时输出为：Markdown（本地检索）、HTML（浏览器浏览）、飞书文档（团队共享）、API 接口（其他系统调用），一次蒸馏、多处可用。</p>
+    </div>
+  </div>
+
+  <!-- 4.4 质量保障 -->
+  <h3 style="font-size:18px;margin-top:32px;margin-bottom:12px;">🛡️ 维度四：质量保障体系</h3>
+
+  <div class="card">
+    <h3>🔬 双 AI 交叉质检（A/B 验证）</h3>
+    <p>当前是子代理自审 + 主代理抽查。可以升级为：同一篇文章启动两个独立子代理，分别存档 → 对比 Part 1 的六项清单差异 → 差异大的部分自动标记为"需人工复核"。<strong>两个独立 AI 同时出错且错误一致的概率极低</strong>，这是目前最有效的 AI 输出质量保障手段之一。</p>
+  </div>
+
+  <div class="card">
+    <h3>📊 质量回归测试</h3>
+    <p>选取 5-10 篇"标准答案文章"（人工精心蒸馏的版本），每次修改 SOP 后，自动用新 SOP 重新蒸馏这 10 篇，对比新旧结果，确保"优化"没有引入新问题。</p>
+  </div>
+</div>
+
+<!-- ===== 五、业务应用 ===== -->
+<div class="section" id="s5">
+  <div class="section-title"><span class="num">5</span> 业务应用</div>
+  <p class="section-desc">从投资知识库延伸到互联网运营工作——怎么把这套方法论应用到实际业务中？</p>
+
+  <blockquote>
+    <strong>核心迁移逻辑：</strong>投资博主文章的"提取→存档→蒸馏→应用"四步流程，本质上是一套<strong>"从非结构化信息中持续提炼可执行知识"</strong>的方法论。把"公众号文章"换成"竞品动态/运营实验/用户反馈"，整个 pipeline 可以直接复用。
+  </blockquote>
+
+  <!-- 场景1 -->
+  <div class="scenario-card">
+    <h3>🏪 场景一：竞品动态追踪系统</h3>
+    <div class="who">👤 个人层面 · 运营/增长岗通用</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">以前做美团和好未来的社群用户增长运营时，团队需要持续监控竞品的最新动态和策略。但当时全靠人肉搜索、手动整理——搜索→截图→写纪要→群发。因为太耗精力，团队每个人都很难坚持，到后面竞品调研越做越少，策略制定越来越凭感觉。<strong>这不是能力问题，是流程设计问题——完全依赖人的意志力去维护一个高频重复的任务，失败是必然的。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 蒸馏方案</h4>
+    <div class="flow-mini">
+      <span class="step">📥 监控竞品公众号/官网/财报</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 AI 自动提取+蒸馏</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📋 结构化简报(策略/数据/动作)</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📤 每周自动推送团队</span>
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <tr><th>蒸馏维度</th><th>监控内容</th><th>业务价值</th></tr>
+        <tr><td>🆕 新产品/功能</td><td>竞品上线了什么新功能、新活动</td><td>快速判断是否需要跟进或差异化</td></tr>
+        <tr><td>💰 定价/策略变化</td><td>竞品调整了定价、优惠、补贴策略</td><td>及时调整自身策略，避免被动</td></tr>
+        <tr><td>📊 公开数据</td><td>竞品披露的用户数、收入、市场份额</td><td>校准自身目标，发现市场机会</td></tr>
+        <tr><td>💬 用户反馈</td><td>竞品用户的公开评论、投诉、好评</td><td>发现竞品弱点 → 自身突破口</td></tr>
+        <tr><td>👥 组织变动</td><td>竞品招聘方向、高管变动、投资动态</td><td>预判竞品下一步战略方向</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>从"人找信息"变成"信息找人"。团队不需要每天花 30 分钟搜竞品——AI 帮你做了 90% 的收集整理工作，人只做最后 10% 的判断和决策。
+    </p>
+  </div>
+
+  <!-- 场景2 -->
+  <div class="scenario-card">
+    <h3>🧪 场景二：运营实验结论库</h3>
+    <div class="who">👥 团队层面 · 增长运营核心资产</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">任何一个增长团队在历史上都做过大量的 A/B 测试和运营实验。但实验报告往往散落在飞书文档、邮件、聊天记录里——三个月后没人记得那次实验的结论，半年后新同学完全不知道前人已经踩过的坑。<strong>增长实验的 ROI 不仅在于"做对一次"，更在于"同样的错不犯第二次"——但大多数团队没有系统化地积累这份资产。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 蒸馏方案</h4>
+    <div class="flow-mini">
+      <span class="step">📝 历史A/B测试报告</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 结构化蒸馏</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🧪 实验结论库</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🔍 检索+新实验设计辅助</span>
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <tr><th>结构化字段</th><th>内容</th><th>示例</th></tr>
+        <tr><td>实验目标</td><td>要验证什么假设</td><td>"首页改版能否提升点击率"</td></tr>
+        <tr><td>变量设计</td><td>改了哪个变量、对照组是什么</td><td>"新版 Banner 样式 vs 旧版"</td></tr>
+        <tr><td>样本量+周期</td><td>实验跑了多久、覆盖多少用户</td><td>"14 天 / 5 万用户"</td></tr>
+        <tr><td>核心结论</td><td>结果是什么（含置信度）</td><td>"点击率 +8.7%（p&lt;0.05）"</td></tr>
+        <tr><td>踩坑记录</td><td>实验中遇到的问题和教训</td><td>"样本量不足导致第 7 天数据波动大"</td></tr>
+        <tr><td>复用建议</td><td>这个结论适用于什么场景</td><td>"适用于内容型产品，工具型产品慎用"</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>新人入职一周就能检索到所有历史实验结论，设计新实验时 AI 自动推荐相关历史实验作为参考——不是从零开始，而是站在团队积累的肩膀上。
+    </p>
+
+    <details>
+      <summary>🔍 进阶：如何用历史实验结论辅助新策略制定</summary>
+      <div class="detail-content">
+        <p>当团队需要设计一个新的增长实验时，AI 可以<strong>反向检索实验结论库</strong>：</p>
+        <p>1. 输入新实验的初步假设（如"增加邀请奖励能否提升裂变率"）</p>
+        <p>2. AI 自动检索历史中所有与"裂变/邀请/奖励"相关的实验结论</p>
+        <p>3. 输出：历史上类似实验成功/失败的比例、关键变量差异、推荐本次实验的变量设计范围</p>
+        <p>4. 同时标注：哪些结论已经过时（如"2024 年的裂变策略在 2026 年可能因平台政策变化已失效"）</p>
+        <p style="margin-top:8px;">这本质上就是把投资博主的"只规划不预测"投资哲学迁移到运营领域——<strong>不靠拍脑袋设计实验，靠历史数据驱动决策</strong>。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- 场景3 -->
+  <div class="scenario-card">
+    <h3>💬 场景三：用户反馈 → 需求映射</h3>
+    <div class="who">🔗 跨部门协作 · 产品运营基本盘</div>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">实际问题</h4>
+    <p style="color:var(--text-secondary);">社群聊天记录、客服对话、App Store 评论、问卷开放题——这些都是了解用户真实想法的金矿。但以前受限于日常繁重工作任务，运营同学很难抽出时间去做系统性的用户调研。即使看了，也往往是"看了几段话、有一个模糊的印象"，无法量化、无法转化为产品需求。<strong>用户反馈这座金矿一直在那里，但我们缺一把好铲子。</strong></p>
+
+    <h4 style="margin-top:16px;color:var(--text-primary);">AI 蒸馏方案</h4>
+    <div class="flow-mini">
+      <span class="step">💬 社群聊天+客服对话</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🤖 定期蒸馏</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">🔍 问题矩阵(频次×严重度)</span>
+      <span style="color:var(--cyan);">→</span>
+      <span class="step">📋 需求池输入</span>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <tr><th>输出维度</th><th>说明</th><th>业务动作</th></tr>
+        <tr>
+          <td style="color:var(--red);">🔴 高频痛点</td>
+          <td>最近一个月用户抱怨最多的问题 Top 10</td>
+          <td>优先级 P0，立即排期修复</td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold);">🟡 未满足需求</td>
+          <td>用户频繁提到的"希望能有XX功能"</td>
+          <td>评估可行性→进入需求池</td>
+        </tr>
+        <tr>
+          <td style="color:var(--cyan);">🔵 竞品提及</td>
+          <td>用户主动对比竞品的场景和评价</td>
+          <td>输入竞品分析+产品定位决策</td>
+        </tr>
+        <tr>
+          <td style="color:var(--green);">🟢 正向反馈</td>
+          <td>用户最喜欢的 feature / 体验点</td>
+          <td>强化核心优势，营销素材来源</td>
+        </tr>
+        <tr>
+          <td style="color:var(--purple);">🟣 趋势变化</td>
+          <td>某些问题是否在上升/下降</td>
+          <td>早期预警，防止问题恶化</td>
+        </tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--cyan);font-size:14px;">
+      <strong>关键改变：</strong>运营不需要额外花时间做调研——日常工作中产生的社群聊天和客服对话就是最好的调研素材。AI 帮你完成了"读→分类→排序→输出洞察"的全流程，人只需要在关键结论上做判断。
+    </p>
+  </div>
+
+  <!-- 扩展场景 -->
+  <h3 style="font-size:18px;margin-top:40px;margin-bottom:16px;">🔮 更多可复用的业务场景</h3>
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>📖 产品文档知识库</h3>
+      <p>历史 PRD、复盘报告、运营 SOP → 蒸馏为统一知识库。新人入职一周内能检索到任何历史决策的完整上下文，大幅缩短上手周期。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：任何有文档积累的团队</p>
+    </div>
+    <div class="card">
+      <h3>🎧 客服 → 产品闭环</h3>
+      <p>客服对话定期蒸馏 → 提炼高频问题和未满足需求 → 自动生成结构化报告输入产品迭代。让客服数据从"成本中心"变成"洞察来源"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：有客服团队的公司</p>
+    </div>
+    <div class="card">
+      <h3>📊 周报/月报自动生成</h3>
+      <p>项目文档 + 聊天记录 + 数据看板 → AI 自动合成结构化周报初稿。运营同学只需审核和补充关键洞察，从"写周报"变成"审周报"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：所有运营/产品岗</p>
+    </div>
+    <div class="card">
+      <h3>📝 运营 → 内容闭环</h3>
+      <p>用户社群聊天定期蒸馏 → 发现用户最关心的疑问和话题 → 自动生成内容选题建议。内容生产从"拍脑袋想选题"变成"数据驱动选用户真正需要的"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：内容运营/自媒体</p>
+    </div>
+    <div class="card">
+      <h3>🎓 新人入职知识包</h3>
+      <p>将团队所有历史复盘、SOP、经验教训蒸馏成一个"新人知识包"，AI 智能体随时答疑。新人不再需要追着老员工问"这个为什么这样做"。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：所有团队</p>
+    </div>
+    <div class="card">
+      <h3>🔍 行业趋势监测</h3>
+      <p>追踪行业报告、政策文件、投资动向 → 自动蒸馏为趋势简报。帮助团队在做季度规划时，有更全面的外部视角。</p>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">适用：战略/市场岗</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 总结 ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">✨</span> 核心收获</div>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>💡 方法论</h3>
+      <p>AI 知识蒸馏不是"让 AI 帮你看文章"——<strong>是设计一套流程，让 AI 成为你的知识工厂流水线工人</strong>。关键在于规则设计（SOP）、质量防线（自审+硬指标）、执行监督（主代理质检）三管齐下。</p>
+    </div>
+    <div class="card">
+      <h3>🛠️ 工程化</h3>
+      <p>把一个人的隐性知识变成可复用、可迭代、可交接的显性系统。<strong>子代理隔离 + 两段式存档 + 五步自审</strong>，这三个设计模式可以迁移到任何"批量处理非结构化信息"的场景。</p>
+    </div>
+    <div class="card">
+      <h3>🚀 可迁移性</h3>
+      <p>这套方法论不只适用于投资知识——竞品追踪、实验复盘、用户洞察、文档管理……<strong>任何"信息输入→知识输出"的场景</strong>，这套 pipeline 都能直接复用，核心模式不变，只换内容源。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 关联链接 ===== -->
+<div style="text-align:center;margin-top:48px;">
+  <a href="./index.html#project-investment-advisor" style="
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(135deg,rgba(163,113,247,0.15),rgba(88,166,255,0.15));
+    border:1px solid var(--border-visible);border-radius:var(--radius);
+    padding:18px 32px;text-decoration:none;color:var(--text-primary);
+    font-size:15px;font-weight:600;transition:var(--transition);
+  " onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-2px)';"
+     onmouseout="this.style.borderColor='var(--border-visible)';this.style.transform='translateY(0)';">
+    <span style="font-size:28px;">🤖</span>
+    <span>查看<strong style="color:var(--purple);">投资顾问智能体</strong> — 知识蒸馏的最终产物<br><small style="color:var(--text-muted);font-weight:400;">跳转到个人网站 AI 作品集</small></span>
+    <span style="color:var(--purple);font-size:18px;">↗</span>
+  </a>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <p>Alex · 投资知识库蒸馏复盘报告 · 2026年7月</p>
+  <p style="margin-top:4px;">AI 不是替代思考，是让思考聚焦在真正需要人的判断的地方</p>
+</div>
+
+</div>
+</body>
+</html>
