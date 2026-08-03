@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Chatbot 赛道竞品对比报告 — 2026年8月</title>
+<style>
+:root {
+  --bg-deep: #0d1117; --bg-card: #161b22; --bg-elevated: #1c2333;
+  --border: #2a3346; --border-visible: #3a4560;
+  --text-primary: #e6edf3; --text-secondary: #a4b4c4; --text-muted: #6e7a8a;
+  --cyan: #39d2c0; --blue: #58a6ff; --purple: #a371f7; --gold: #e3b341;
+  --red: #f85149; --green: #3fb950; --orange: #f0883e;
+  --radius: 12px; --radius-sm: 8px; --transition: 0.25s ease;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-padding-top: 56px; scroll-behavior: smooth; background: var(--bg-deep); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px; line-height: 1.72; color: var(--text-primary);
+  background: var(--bg-deep); max-width: 960px; margin: 0 auto; padding: 0 24px 80px;
+}
+
+/* Navigation */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto; gap: 0; margin: 0 -24px; padding: 0 24px;
+}
+.nav a {
+  padding: 12px 14px; font-size: 13px; color: var(--text-secondary);
+  text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: var(--transition);
+}
+.nav a:hover, .nav a.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.nav a.back { color: var(--purple); border-right: 1px solid var(--border); padding-right: 18px; margin-right: 4px; }
+
+/* Hero */
+.hero {
+  text-align: center; padding: 60px 0 48px;
+  border-bottom: 1px solid var(--border); margin-bottom: 40px;
+}
+.hero h1 {
+  font-size: 2em; font-weight: 800; margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero .subtitle { color: var(--text-secondary); font-size: 1em; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-cyan { background: rgba(57,210,192,0.12); color: var(--cyan); }
+.badge-blue { background: rgba(88,166,255,0.12); color: var(--blue); }
+
+section { margin-bottom: 48px; }
+section h2 {
+  font-size: 1.4em; margin-bottom: 20px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+}
+section h2 .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  font-size: 14px; font-weight: 700; color: #0d1117; flex-shrink: 0;
+}
+
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table {
+  width: 100%; border-collapse: collapse; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;
+}
+th {
+  background: var(--bg-elevated); color: var(--cyan); padding: 10px 14px;
+  text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+}
+td { padding: 10px 14px; color: var(--text-secondary); border-top: 1px solid var(--border); }
+tr:hover td { background: rgba(57,210,192,0.03); }
+
+.tag {
+  display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+}
+.tag-cyan { background: rgba(57,210,192,0.15); color: var(--cyan); }
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
+.tag-purple { background: rgba(163,113,247,0.15); color: var(--purple); }
+.tag-gold { background: rgba(227,179,65,0.15); color: var(--gold); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  transition: var(--transition);
+}
+.card:hover { border-color: var(--border-visible); }
+
+blockquote {
+  border-left: 3px solid var(--cyan); background: rgba(57,210,192,0.06);
+  padding: 14px 20px; margin: 16px 0; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary); font-style: italic;
+}
+code {
+  font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+  background: var(--bg-elevated); color: var(--orange); padding: 2px 6px; border-radius: 4px; font-size: 13px;
+}
+a { color: var(--blue); text-decoration: none; transition: var(--transition); }
+a:hover { color: var(--cyan); text-decoration: underline; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+.highlight { font-weight: 600; color: var(--cyan); }
+
+/* Bar chart */
+.bar-chart { margin: 16px 0; }
+.bar-row { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
+.bar-label { width: 80px; font-size: 13px; color: var(--text-secondary); text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 22px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.bar-val { width: 60px; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+
+footer { text-align: center; padding: 48px 0 24px; color: var(--text-muted); font-size: 13px; }
+
+@media (max-width: 640px) {
+  body { padding: 0 16px 60px; }
+  .hero h1 { font-size: 1.4em; }
+  .nav { margin: 0 -16px; padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="ai-competitive-intel-system.html" class="back">← 系统文档</a>
+  <a href="#overview">市场格局</a>
+  <a href="#models">模型能力</a>
+  <a href="#pricing">定价</a>
+  <a href="#business">商业模式</a>
+  <a href="#recommend">选型建议</a>
+</nav>
+
+<header class="hero" id="intro">
+  <h1>AI Chatbot 赛道竞品对比报告</h1>
+  <p class="subtitle">智谱 GLM · 百度文心 · 字节豆包 · Kimi · 通义千问<br>调研日期：2026年8月3日 · 方法：Claude Code 6 Agent 并行采集</p>
+  <div class="badges">
+    <span class="badge badge-cyan">Multi-Agent 采集</span>
+    <span class="badge badge-blue">5分37秒完成</span>
+  </div>
+</header>
+
+<section id="overview">
+  <h2><span class="num">1</span> 市场格局一览</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>产品</th><th>公司</th><th>一句话定位</th><th>C端规模</th><th>估值/市值</th></tr>
+      <tr><td><strong>智谱 GLM</strong></td><td>智谱AI</td><td>中国版 Anthropic，开源+编程双标签</td><td>月活~702万</td><td>万亿港元（港股）</td></tr>
+      <tr><td><strong>百度文心</strong></td><td>百度</td><td>知识增强+搜索联动，政企合规首选</td><td>日活~500万</td><td>市值~450亿美元</td></tr>
+      <tr><td><strong>字节豆包</strong></td><td>字节跳动</td><td>C端断层第一，从聊天转向生产力</td><td><span class="highlight">月活 3.82 亿</span></td><td>ARR 40亿美元</td></tr>
+      <tr><td><strong>Kimi</strong></td><td>月之暗面</td><td>全球最大开源模型，对标海外头部</td><td>月活~1亿+</td><td>投前500亿美元</td></tr>
+      <tr><td><strong>通义千问</strong></td><td>阿里巴巴</td><td>模型+开源生态+阿里交易闭环</td><td>月活 1.67亿</td><td>阿里云体系内</td></tr>
+    </table>
+  </div>
+  <div class="bar-chart">
+    <div class="bar-row"><span class="bar-label">豆包</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--cyan)"></div></div><span class="bar-val">3.82亿</span></div>
+    <div class="bar-row"><span class="bar-label">千问</span><div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--blue)"></div></div><span class="bar-val">1.67亿</span></div>
+    <div class="bar-row"><span class="bar-label">Kimi</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--purple)"></div></div><span class="bar-val">~1亿+</span></div>
+    <div class="bar-row"><span class="bar-label">智谱</span><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--gold)"></div></div><span class="bar-val">702万</span></div>
+    <div class="bar-row"><span class="bar-label">文心</span><div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--red)"></div></div><span class="bar-val">500万 DAU</span></div>
+  </div>
+</section>
+
+<hr>
+
+<section id="models">
+  <h2><span class="num">2</span> 旗舰模型能力对比</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>维度</th><th>智谱 GLM-5.2</th><th>文心 5.1</th><th>豆包 2.1 Pro</th><th>Kimi K3</th><th>千问 Qwen3.8</th></tr>
+      <tr><td>总参数</td><td>744B MoE</td><td>2.4万亿 MoE</td><td>—</td><td><span class="tag tag-green">2.8万亿 (最大)</span></td><td>2.4万亿 MoE</td></tr>
+      <tr><td>上下文</td><td>1M</td><td>—</td><td>—</td><td>1M</td><td>1M</td></tr>
+      <tr><td>多模态</td><td>文本+代码</td><td><span class="tag tag-green">原生全模态</span></td><td><span class="tag tag-green">多模态全家桶</span></td><td>文本+视觉</td><td>视觉理解</td></tr>
+      <tr><td>开源</td><td>MIT 协议</td><td>❌ 闭源</td><td>❌ 闭源</td><td><span class="tag tag-green">完整权重开源</span></td><td>部分开源</td></tr>
+      <tr><td>Code 排名</td><td><span class="tag tag-green">Code Arena 全球第一</span></td><td>—</td><td>TerminalBench 第一梯队</td><td>Frontend Code Arena 第一</td><td>CodeArena 第四</td></tr>
+      <tr><td>Agent 能力</td><td><span class="tag tag-green">OpenClaw 闭环最强</span></td><td>超越 DeepSeek-V4-Pro</td><td>办公任务Agent化</td><td>300子Agent集群</td><td>OSWorld 主流第一</td></tr>
+    </table>
+  </div>
+</section>
+
+<hr>
+
+<section id="pricing">
+  <h2><span class="num">3</span> API 定价对比（元/百万 Token）</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>产品</th><th>旗舰模型</th><th>输入</th><th>输出</th><th>缓存命中</th><th>价格特征</th></tr>
+      <tr><td>智谱</td><td>GLM-5.2</td><td>8</td><td>28</td><td>2</td><td><span class="tag tag-gold">逆势涨价83%，使用量反增400%</span></td></tr>
+      <tr><td>文心</td><td>ERNIE 5.1</td><td><span class="tag tag-green">4</span></td><td><span class="tag tag-green">18</span></td><td>—</td><td>较5.0降25%，技术降本驱动</td></tr>
+      <tr><td>豆包</td><td>豆包2.1 Pro</td><td>6</td><td>30</td><td>1.2</td><td>宣称较Claude降80%</td></tr>
+      <tr><td>Kimi</td><td>K3</td><td>20</td><td><span class="tag tag-red">100</span></td><td>2</td><td><span class="tag tag-red">最贵国产，对标海外</span></td></tr>
+      <tr><td>千问</td><td>Qwen3.8-Max</td><td>12</td><td>36</td><td>1.5</td><td>Opus5的40%，夜间5折</td></tr>
+    </table>
+  </div>
+</section>
+
+<hr>
+
+<section id="business">
+  <h2><span class="num">4</span> 商业模式与关键动态</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th></th><th>智谱</th><th>文心</th><th>豆包</th><th>Kimi</th><th>千问</th></tr>
+      <tr><td><strong>C端</strong></td><td>清言免费</td><td>坚持免费</td><td><span class="tag tag-cyan">分层付费 68-500元/月</span></td><td>会员 49-699元</td><td>App免费</td></tr>
+      <tr><td><strong>B端</strong></td><td>Coding Plan 49-469元/月</td><td>千帆MaaS+定制</td><td><span class="tag tag-cyan">火山引擎 MaaS 市占49.5%</span></td><td>API按量 B端70%</td><td>百炼Token Plan 39元起</td></tr>
+      <tr><td><strong>2026关键动作</strong></td><td>港股上市万亿市值</td><td>昆仑芯IPO</td><td>飞书并入豆包</td><td>F轮35亿美元</td><td>Qwen3.8+千问办公</td></tr>
+      <tr><td><strong>最大风险</strong></td><td>市销率1200倍</td><td>C端落后28倍</td><td>日收入<100万</td><td>算力不足停售</td><td>C端商业化未定</td></tr>
+    </table>
+  </div>
+</section>
+
+<hr>
+
+<section id="recommend">
+  <h2><span class="num">5</span> 选型建议</h2>
+
+  <div class="card" style="border-left:4px solid var(--cyan)">
+    <h3 style="margin-top:0;font-size:1em;">日常 AI 助手</h3>
+    <p style="color:var(--text-secondary);font-size:14px;"><strong>豆包 2.1 Pro</strong>（68元/月）或 <strong>Kimi Work</strong>——豆包办公全链路最强，Kimi深度研究能力顶级。</p>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--blue)">
+    <h3 style="margin-top:0;font-size:1em;">API 供应商选型</h3>
+    <div class="table-wrap"><table>
+      <tr><th>需求</th><th>推荐</th><th>理由</th></tr>
+      <tr><td>编程/Agent开发</td><td><strong>智谱 GLM-5.2</strong></td><td>Code Arena第一，OpenClaw最成熟</td></tr>
+      <tr><td>性价比</td><td><strong>千问 Qwen3.8</strong></td><td>Opus5 40%价格，夜间5折</td></tr>
+      <tr><td>全模态</td><td><strong>豆包 2.1 Pro</strong></td><td>视频/图像/音频全家桶</td></tr>
+      <tr><td>中文理解+搜索</td><td><strong>文心 5.1</strong></td><td>百度搜索联动，知识溯源最强</td></tr>
+      <tr><td>开源自部署</td><td><strong>Kimi K3</strong></td><td>全球最大开源模型</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--purple)">
+    <h3 style="margin-top:0;font-size:1em;">面试时聊行业格局 — 四个关键叙事</h3>
+    <p style="color:var(--text-secondary);font-size:14px;">
+      1. <strong>"GLM时刻"</strong>：Anthropic被禁后24小时全量开放，半年市值涨20倍<br>
+      2. <strong>"又一个DeepSeek时刻"</strong>：Kimi K3全球最大开源登顶编程榜，竞品股价两天跌28%<br>
+      3. <strong>"从卷参数到卷落地"</strong>：豆包3.82亿月活→C端分层付费，行业从免费转向订阅<br>
+      4. <strong>"国产首次逆势涨价"</strong>：智谱Q1提价83%反增400%——从价格战走向定价权
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p>数据来源：官方发布、澎湃/财联社/证券时报/量子位等财经科技媒体、QuestMobile/LMArena/Artificial Analysis</p>
+  <p style="margin-top:4px">Built with Claude Code · 6-Agent Parallel Collection · 2026-08-03</p>
+  <p style="margin-top:8px"><a href="ai-competitive-intel-system.html">← 返回系统文档</a></p>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav a:not(.back)');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
