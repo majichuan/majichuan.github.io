@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <meta name="description" content="Agent × Obsidian 个人知识操作系统案例：证据链、状态流、人工审批与知识蒸馏实践。" />
+    <title>Agent × Obsidian 个人知识操作系统｜马积川</title>
+    <link rel="stylesheet" href="case-study.css" />
+  </head>
+  <body>
+    <nav class="case-nav" aria-label="案例导航"><div class="case-shell"><a class="case-back" href="../index.html#work">← 返回新版作品集</a><span class="case-version">CASE FILE / 01</span></div></nav>
+    <main>
+      <header class="case-hero"><div class="case-shell"><span class="case-kicker">FLAGSHIP SYSTEM</span><h1>Agent × Obsidian<br />个人知识操作系统</h1><p class="case-lead">把来源、知识和当前有效结论组织成一条可追溯、可审批、可持续迭代的工作流，让 AI 协作不再依赖一次性对话记忆。</p><div class="case-meta"><span>持续使用</span><span>产品架构</span><span>Human Gate</span></div></div></header>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>PROBLEM / 01</span><h2>要解决的问题</h2></header><div class="case-grid"><article><span>信息混写</span><h3>来源、摘要与结论混在一起</h3><p>事实和判断缺少清晰层级，后续复用时难以确认依据。</p></article><article><span>协作漂移</span><h3>上下文衰减与跨 Agent 状态漂移</h3><p>更换客户端或进入新会话后，进度、规则和权威版本容易失真。</p></article><article><span>生效失控</span><h3>结论过早固化</h3><p>AI 生成的候选判断不能在没有人工确认时直接成为当前有效结论。</p></article></div></div></section>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>MECHANISM / 02</span><h2>系统机制</h2></header><ol class="case-flow" aria-label="知识操作系统流程"><li><span>01</span><strong>Raw / Capture</strong><small>原始信息进入</small></li><li><span>02</span><strong>Source</strong><small>来源留痕</small></li><li><span>03</span><strong>Knowledge</strong><small>事实分层与复用</small></li><li><span>04</span><strong>Current Truth</strong><small>当前有效结论</small></li></ol><div class="human-gate"><i aria-hidden="true"></i><strong>Human Gate</strong><p>候选结论必须经过人工审批，不能由 AI 自动生效。</p></div></div></section>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>ROLE / 03</span><h2>我的角色</h2></header><div class="case-fields"><article class="case-field"><span>问题定义</span><h3>识别真正需要被系统化的协作摩擦</h3><p>从上下文衰减、权威版本漂移和敏感边界出发，定义系统必须解决的问题。</p></article><article class="case-field"><span>产品架构</span><h3>设计信息层级、状态流和入口</h3><p>确定 Source、Knowledge、Current Truth、MOC 与交接之间的职责关系。</p></article><article class="case-field"><span>规则设计</span><h3>建立权限、审批和唯一权威版本</h3><p>让 AI 的可执行范围、人工边界和变更记录有明确约束。</p></article><article class="case-field"><span>验收迭代</span><h3>用真实任务持续验证</h3><p>AI 协助实现和迭代，我负责判断是否符合任务目标与安全边界。</p></article></div></div></section>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>USE CASE / 04</span><h2>真实用例｜知识蒸馏系统</h2></header><div class="case-grid"><article><span>问题</span><h3>多来源内容难以稳定沉淀</h3><p>长文章、截图和多来源信息容易让摘要、事实与结论混写。</p></article><article><span>工作流</span><h3>来源留痕到候选结论</h3><p>Raw／Source → 结构化蒸馏 → Knowledge → Current Truth 候选。</p></article><article><span>真实用途</span><h3>公开内容持续进入知识库</h3><p>用于公开文章的来源留痕、结构化精读、知识卡片与行动建议沉淀。</p></article></div></div></section>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>APPLICATION / 05</span><h2>对下一份工作的应用</h2></header><div class="case-grid"><article><span>业务研究与复盘</span><h3>让分散信息成为可复用的决策依据</h3><p>可用于沉淀竞品研究、用户反馈、实验复盘等业务资料，让关键判断能够回溯来源并持续更新。</p></article><article><span>跨角色协作</span><h3>围绕同一来源和当前结论协作</h3><p>可帮助运营、产品、数据和研发共享任务背景、依据与状态，降低跨角色交接中的信息丢失和版本混乱。</p></article><article><span>部门能力沉淀</span><h3>把个人经验转成团队可复用机制</h3><p>把高频工作固化为可复用模板、Skill 与人工审批流程，使方法能够被复用、校验和持续迭代。</p></article></div></div></section>
+
+      <section class="case-section"><div class="case-shell"><header class="case-section-head"><span>VALIDATION / 06</span><h2>验证与边界</h2></header><div class="case-fields"><article class="case-field"><span>真实验证</span><h3>V1 已部署并持续迭代</h3><p>系统已用于公开文章知识蒸馏、求职证据管理及跨 AI 客户端协作。</p></article><article class="case-field"><span>能力证明</span><h3>从模糊问题到可运行机制</h3><p>证明我能定义问题、组织复杂信息、建立人工门禁并持续验收。</p></article></div><p class="boundary"><strong>公开边界：</strong>本案例不展示私人知识内容、受限来源原文、物理路径、凭据或未公开求职材料。</p></div></section>
+    </main>
+    <footer class="case-footer"><div class="case-shell">马积川 · AI PRODUCT GROWTH · CASE FILE 01</div></footer>
+  </body>
+</html>
