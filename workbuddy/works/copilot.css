@@ -1,0 +1,40 @@
+/* Preserve the source's linear reading order and full, uncropped evidence. */
+html.copilot-document{--chapter-nav-height:61px;scroll-padding-top:calc(var(--header) + var(--chapter-nav-height))}
+.copilot-page .chapter-bar{position:sticky;top:var(--header);z-index:19;background:var(--paper);border-bottom:1px solid var(--line)}
+.copilot-page .chapter-nav{display:flex;gap:24px;padding-block:8px}
+.copilot-page .step-nav{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px}
+.copilot-page .chapter-nav a,.copilot-page .step-nav a{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:700;text-decoration:none;color:var(--action)}
+.copilot-page .chapter-nav a:hover,.copilot-page .step-nav a:hover{text-decoration:underline}
+.copilot-page .chapter-nav a{justify-content:center;padding:6px 12px;border-bottom:2px solid transparent;line-height:1.5;text-align:center}
+.copilot-page .chapter-nav a[aria-current="location"]{border-bottom-color:var(--action);background:var(--raised)}
+.copilot-page .source-copy h2{font-size:32px;line-height:1.45;margin-bottom:32px}
+.copilot-page .source-copy h3{font-size:23px;line-height:1.55;margin:48px 0 20px;scroll-margin-top:20px}
+.copilot-page .source-copy h2+h3{margin-top:0}
+.copilot-page .source-copy p{max-width:54em;line-height:1.9;margin:16px 0}
+.copilot-page .source-copy strong{color:var(--ink)}
+.copilot-page .source-copy code{font:inherit;overflow-wrap:anywhere}
+.copilot-page .source-copy a{color:var(--action);text-underline-offset:4px}
+.copilot-page .source-copy ul{line-height:1.9;margin:20px 0}
+.copilot-page .source-copy li+li{margin-top:16px}
+.copilot-page .source-copy blockquote{margin:24px 0;padding:16px 24px;background:var(--muted-paper);border-radius:9px;color:var(--text)}
+.copilot-page .source-copy blockquote p{margin:8px 0}
+.copilot-page .source-copy .table-wrap{margin:24px 0}
+.copilot-page .source-copy table{font-size:15px}
+.copilot-page .source-copy td:first-child{font-weight:650;color:var(--ink);width:24%}
+.copilot-page .source-copy .screenshot{margin:28px 0 40px}
+.copilot-page .source-copy .screenshot img{height:auto;max-height:none;object-fit:contain}
+.copilot-page .source-copy .screenshot figcaption{line-height:1.7}
+.copilot-page .step-nav{padding:16px 0;border-block:1px solid var(--line);margin:32px 0}
+.copilot-page .source-copy .internal-reference{color:var(--muted)}
+.copilot-page .business-journey{margin:28px 0;padding:28px;border:1px solid var(--line);border-radius:9px;text-align:center;background:var(--raised)}
+.copilot-page .business-journey figcaption{font-size:18px;font-weight:750;color:var(--ink)}
+.copilot-page .business-journey p{max-width:none;margin:14px 0}
+.copilot-page .journey-scope{font-size:14px;color:var(--muted)}
+.copilot-page .journey-branches{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:16px 0;border-block:1px solid var(--line)}
+.copilot-page .journey-branches>div+div{border-left:1px solid var(--line);padding-left:24px}
+.copilot-page .journey-branches p{font-size:15px;margin:6px 0}
+.copilot-page .journey-merge>span{color:var(--blue)}
+.copilot-page .journey-merge strong{color:var(--action)}
+.copilot-page .journey-merge p span{font-size:14px;color:var(--muted)}
+@media(max-width:760px){html.copilot-document{--chapter-nav-height:69px}.copilot-page .chapter-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.copilot-page .chapter-nav a{min-height:52px;padding:4px 3px}.copilot-page .source-copy h2{font-size:27px;margin-bottom:26px}.copilot-page .source-copy h3{font-size:21px;margin:36px 0 16px}.copilot-page .source-copy p{font-size:16px;line-height:1.85}.copilot-page .source-copy table{min-width:680px}.copilot-page .source-copy blockquote{padding:12px 18px}.copilot-page .business-journey{padding:20px 16px}.copilot-page .journey-branches{gap:14px}.copilot-page .journey-branches>div+div{padding-left:14px}.copilot-page .journey-branches p{font-size:14px}.copilot-page .step-nav{gap:0 18px}}
+@media print{html.copilot-document{scroll-padding-top:0;scroll-behavior:auto}.copilot-page .chapter-bar,.copilot-page .step-nav{display:none}.copilot-page .source-copy table{min-width:0}.copilot-page .source-copy .screenshot{break-inside:auto}.copilot-page .source-copy h3{break-after:avoid}}
