@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <meta name="description" content="AI 竞品情报分析系统案例：从公开信息采集、结构化整理和人工复核，到持续跟踪与历史竞品报告样例。" />
+    <title>AI 竞品情报分析系统｜马积川 WorkBuddy 岗位作品集</title>
+    <link rel="stylesheet" href="case-study.css?v=20260818-intel-redesign" />
+    <style>
+      .intel-flow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .intel-flow li { min-height: 172px; }
+      .intel-result-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-strong); }
+      .intel-result-list li { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 34px; padding: 25px 0; border-bottom: 1px solid var(--line); }
+      .intel-result-list strong { font-size: 17px; }
+      .intel-result-list p { max-width: 70ch; margin: 0; color: var(--ink-soft); font-size: 14px; }
+      .report-panel { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(240px, .65fr); gap: 44px; align-items: end; padding: 34px; color: var(--paper-raised); background: var(--ink); border-radius: 14px; }
+      .report-panel h3 { margin: 0 0 14px; font-size: clamp(24px, 3vw, 36px); line-height: 1.25; }
+      .report-panel p { max-width: 64ch; margin: 0; color: #c2ccda; font-size: 14px; }
+      .report-action { display: grid; gap: 12px; justify-items: stretch; }
+      .report-link { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; color: #fff; background: var(--electric-blue); border-radius: 7px; font-weight: 800; text-decoration: none; transition: background .2s ease, transform .2s ease; }
+      .report-link:hover { color: #fff; background: var(--electric-blue-dark); transform: translateY(-2px); }
+      .report-date { color: #9eabba; font-size: 11px; text-align: center; }
+      @media (max-width: 880px) {
+        .intel-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .intel-flow li { min-height: 148px; border-bottom: 1px solid var(--line); }
+        .intel-flow li:nth-child(2n) { border-right: 0; }
+        .intel-flow li:last-child { grid-column: 1 / -1; border-bottom: 0; }
+        .intel-flow li:not(:last-child)::after { display: none; }
+      }
+      @media (max-width: 720px) {
+        .case-back { min-height: 44px; }
+        .intel-flow { grid-template-columns: 1fr; }
+        .intel-flow li { min-height: auto; }
+        .intel-flow li:last-child { grid-column: auto; }
+        .intel-result-list li { grid-template-columns: 1fr; gap: 8px; }
+        .report-panel { grid-template-columns: 1fr; gap: 28px; padding: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="case-nav" aria-label="案例导航">
+      <div class="case-shell"><a class="case-back" href="../index.html#work">← 返回 WorkBuddy 岗位作品集</a><span class="case-version">WORKBUDDY / 研究型探索</span></div>
+    </nav>
+
+    <main>
+      <header class="case-hero" id="intro">
+        <div class="case-shell">
+          <h1>AI 竞品情报分析系统</h1>
+          <p class="case-lead">把多来源竞品动态按产品、时间、变化类型和优先级整理，支持去重、持续跟踪和报告输出，为产品与运营决策提供可回溯的研究输入。</p>
+          <div class="case-meta"><span>研究型探索</span><span>公开信息</span><span>报告样例</span></div>
+        </div>
+      </header>
+
+      <section class="case-section" id="overview">
+        <div class="case-shell">
+          <header class="case-section-head"><span>PROJECT / 01</span><h2>项目概述</h2></header>
+          <div class="case-grid">
+            <article><span>业务问题</span><h3>竞品信息分散，难以形成连续判断</h3><p>产品更新、定价、模型能力和商业动作分布在不同公开来源中，重复信息多，单次检索也难以看清变化脉络。</p></article>
+            <article><span>解决方案</span><h3>把一次性搜索变成结构化情报链路</h3><p>围绕固定监控维度完成采集、整理、去重、分级、入库和报告输出，让每条变化都有来源和后续状态。</p></article>
+            <article><span>我的角色</span><h3>负责问题定义、规则和结果验收</h3><p>我确定监控范围、信息结构、优先级和验收标准；AI 协助采集公开信息、整理记录并生成报告草稿。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section" id="workflow">
+        <div class="case-shell">
+          <header class="case-section-head"><span>WORKFLOW / 02</span><h2>运行方式</h2></header>
+          <ol class="case-flow intel-flow" aria-label="竞品情报分析工作流">
+            <li><span>01</span><strong>明确监控范围</strong><small>确定产品、业务问题和对比维度</small></li>
+            <li><span>02</span><strong>采集公开信息</strong><small>保留来源、时间和原始内容</small></li>
+            <li><span>03</span><strong>结构化整理</strong><small>按产品、变化类型和优先级归档</small></li>
+            <li><span>04</span><strong>人工复核入库</strong><small>去重、校验并筛选有意义的变化</small></li>
+            <li><span>05</span><strong>输出报告</strong><small>形成对比结论与业务讨论输入</small></li>
+          </ol>
+          <div class="human-gate"><i aria-hidden="true"></i><strong>人工复核是必要环节</strong><p>系统负责整理信息，不把未经核验的抓取结果直接当成结论；关键数字、判断和引用都需要回到原始来源确认。</p></div>
+        </div>
+      </section>
+
+      <section class="case-section" id="output">
+        <div class="case-shell">
+          <header class="case-section-head"><span>OUTPUT / 03</span><h2>输出结果</h2></header>
+          <ul class="intel-result-list">
+            <li><strong>结构化情报记录</strong><p>把零散动态整理为可检索记录，统一产品、时间、变化类型、摘要、优先级和来源字段。</p></li>
+            <li><strong>持续跟踪线索</strong><p>在同一结构下观察定价、功能、模型能力和产品策略变化，减少重复搜索和信息遗漏。</p></li>
+            <li><strong>对比研究报告</strong><p>围绕明确业务问题组织产品对比、关键变化与阶段判断，作为专题研究、周报和策略讨论的输入。</p></li>
+          </ul>
+          <p class="boundary"><strong>当前边界：</strong>这是基于公开信息完成的研究型系统与报告样例，不代表已在真实企业部门部署；下方报告保留 2026 年 8 月 3—4 日的历史研究内容，关键数字与引用未重新核验，不应当作当前行业事实。</p>
+        </div>
+      </section>
+
+      <section class="case-section" id="report">
+        <div class="case-shell">
+          <header class="case-section-head"><span>REPORT / 04</span><h2>历史报告样例</h2></header>
+          <article class="report-panel">
+            <div><h3>AI 大模型赛道竞品对比报告</h3><p>覆盖 10 家国内外 AI 大模型与 Chatbot 产品，围绕产品定位、模型能力、API 定价、商业模式及中美差异形成完整对比。</p></div>
+            <div class="report-action"><a class="report-link" href="ai-chatbot-competitive-report-20260803.html" target="_blank" rel="noopener">查看历史报告 <span aria-hidden="true">↗</span></a><span class="report-date">历史快照：2026.08.03—08.04 · 未重新核验</span></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="case-footer"><div class="case-shell">马积川 · WorkBuddy 岗位作品集 · AI 竞品情报</div></footer>
+  </body>
+</html>
+
